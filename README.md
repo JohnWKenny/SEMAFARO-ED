@@ -43,4 +43,53 @@ A pilha é usada para armazenar as direções possíveis para o carro se mover (
 2. Em seguida, atualiza a posição dos carros e verifica se eles devem parar nos semáforos ou desviar de obstáculos.
 3. A cada ciclo de tempo, os semáforos mudam de cor, e os carros se movem ou ficam parados, dependendo das regras de trânsito.
 
-Dessa forma, o programa simula o comportamento de carros em uma cidade, levando em conta semáforos e possíveis engarrafamentos.
+## Como a Lógica Funciona
+1. Cada carro se move conforme a pilha vai desimpilhando.
+2. Caso o item que foi desimpilhado não seja igual ao sentido da estrada ele deve ser ignorado.
+3. Quando a pilha ficar vazia ela é preenchida com os movimentos, isso até achar qual o movimento certo a se fazer.
+
+## Problema da Lógica (recomendável olhar o código)
+Seguindo a lógica original, o carro ainda pode se mover incorretamente em algumas situações. Vamos considerar o seguinte exemplo para ilustrar o problema. Suponha os seguintes símbolos:
+
+- `C`: Carro
+- `SV`: Semáforo verde
+- Desconsideraremos o sinal amarelo e vermelho.
+
+Agora, imagine a seguinte estrada:
+`C > SV > >`
+
+Suponha que a pilha de direções seja `['<', '>']`, com o topo sendo `>`, e uma função arbitrária que desempilha, empilha todos os movimentos caso a pilha esteja vazía e move o carro conforme as seguintes condições:
+
+- Se a posição à direita contiver `>` ou `SV`, o carro se move para a direita.
+- Se a posição à esquerda contiver `<` ou `SV`, o carro se move para a esquerda.
+
+A sequência de movimentos seria algo assim:
+
+`> C SV > >`
+
+Lembrando que a pilha ficaria `['>']`, então ele desimpilharia ele sem se mover e depois empilha todos os movimentos de volta, voltando ao original, o que implica que isso acontecerá diversas vezes.
+
+O carro se move para a direita, ficando assim:
+
+`> > C > >`
+
+Ao continuar seguindo as regras, o carro novamente se move para a direita, aproximando-se do semáforo verde:
+
+`> > SV C >`
+
+Neste ponto, se a função detectar que a próxima posição à esquerda (`<`) tem um semáforo verde, o carro tentaria retornar para essa posição, resultando no seguinte:
+
+`> > C > >`
+
+Isso criaria um loop infinito, já que o carro continuaria a se mover entre as mesmas posições, sem alcançar um destino final.
+
+### Solução Implementada
+
+Para resolver esse problema, foi implementada uma verificação adicional. Agora, a função não apenas verifica a próxima posição à frente, mas também a posição adjacente (a "traseira" do carro). Com essa verificação dupla, o carro evita entrar em loops, pois a lógica impede que ele volte para uma posição já ocupada ou desfavorável. Assim, o movimento fica mais preciso e evita comportamentos erráticos.
+
+Caso dúvidas pode-se fazer um teste, na função mover carro retire de todas as condições que verificam a posição adjacente, por exemplo, se o carro esta indo para direita sua posiçõa normal seria y + 1, sua posição adjacente seria y - 1.
+
+### O Que Falta
+1. Logica para o sinal amarelo.
+2. Evento aleatorio.
+3. Verificar a condição de desvio.
