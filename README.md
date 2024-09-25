@@ -94,13 +94,13 @@ Caso dúvidas pode-se fazer um teste, na função mover carro retire de todas as
 ### O Que Falta/Problema
 
 #### URGENTE
-[/] Verificar a condição de desvio. 
-[] Modificar lógia do sinal p/ carros não virarem um só (preferencia menor linha)
-[] Colocar para o semáforo descidir o próximo movimento
-[] Carro na frente não sabendo direção por ter outro carro
+- [/] Verificar a condição de desvio. 
+- [] Modificar lógia do sinal p/ carros não virarem um só (preferencia menor linha)
+- [] Colocar para o semáforo descidir o próximo movimento
+- [] Carro na frente não sabendo direção por ter outro carro
 
 #### DEPOIS FAZ
-[] Evento aleatorio.
+- [] Evento aleatorio.
 
 #### DONE
-[x] Logica para o sinal amarelo.
+- [x] Logica para o sinal amarelo.
