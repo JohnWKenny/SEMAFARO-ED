@@ -106,7 +106,7 @@ void atualizarMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], C
 // Imprime a matriz da cidade no terminal com carros, semáforos e ruas
 // Parâmetros:
 // - matriz: matriz representando a cidade
-void imprimirMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA])
+void imprimirMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], Semaforo *semaforos)
 {
     for (int i = 0; i < TAMANHO_CIDADE_LINHA; i++)
     {
@@ -120,7 +120,10 @@ void imprimirMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA])
             else if (celula == 'G')
                 printf("🟢 "); // Representa um semáforo verde
             else if (celula == 'R')
-                printf("🔴 "); // Representa um semáforo vermelho
+                if (!semaforos[i].estado_verde && semaforos[i].contador < (semaforos[i].tempo_vermelho)/2)
+                    printf("🟡 "); // Representa um semáforo amarelo
+                else
+                    printf("🔴 "); // Representa um semáforo vermelho
             else
                 printf("%c ", celula); // Qualquer outra célula
         }
@@ -257,9 +260,13 @@ void moverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
                         if (carro->viaDupla == 0)
                             carro->viaDupla = 94;
                         
-                        // Caso o sentido da via dupla seja par cima
+                        // Caso o sentido da via dupla seja pra cima
                         if (carro->viaDupla == 94)
                         {
+                            if(posicaoOcupada((carro->x) - 1,  carro->y, carros)){
+                                desviar(carro, carros);// se a posição pra onde o carro está tentando ir tiver outro carro, tento um possível desvio 
+                            }
+                            else
                             (carro->x)--; // Andando para cima
                             breakwhile = 1;
                         }
@@ -271,7 +278,11 @@ void moverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
                         (matriz[carro->x - 1][carro->y] == 'G' && matriz[carro->x + 1][carro->y] == '^') ||
                         (matriz[carro->x - 1][carro->y] == 'v' && matriz[carro->x + 1][carro->y] == '^'))
                     {
-                        carro->viaDupla = 0; // O carro não esta numa vida dupla
+                        carro->viaDupla = 0; // O carro não esta numa vida 
+                        if(posicaoOcupada((carro->x) - 1, carro->y, carros)){
+                                desviar(carro, carros); // se a posição pra onde o carro está tentando ir tiver outro carro, tento um possível desvio 
+                            }
+                        else
                         (carro->x)--; // Andando para cima
                         breakwhile = 1;
                     }
@@ -293,6 +304,10 @@ void moverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
                             carro->viaDupla = 86;
                         if (carro->viaDupla == 86)
                         {
+                            if(posicaoOcupada((carro->x) + 1, carro->y, carros)){
+                                desviar(carro, carros);// se a posição pra onde o carro está tentando ir tiver outro carro, tento um possível desvio 
+                            }
+                            else
                             (carro->x)++;
                             breakwhile = 1;
                         }
@@ -304,6 +319,10 @@ void moverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
                         (matriz[carro->x + 1][carro->y] == 'v' && matriz[carro->x - 1][carro->y] == 'V'))
                     {
                         carro->viaDupla = 0;
+                        if(posicaoOcupada((carro->x) + 1, carro->y, carros)){
+                                desviar(carro, carros);// se a posição pra onde o carro está tentando ir tiver outro carro, tento um possível desvio 
+                            }
+                        else
                         (carro->x)++;
                         breakwhile = 1;
                     }
@@ -323,6 +342,10 @@ void moverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
                             carro->viaDupla = 62;
                         if (carro->viaDupla == 62)
                         {
+                            if(posicaoOcupada((carro->x), carro->y +1, carros)){
+                                desviar(carro, carros);// se a posição pra onde o carro está tentando ir tiver outro carro, tento um possível desvio 
+                            }
+                        else
                             (carro->y)++;
                             breakwhile = 1;
                         }
@@ -334,6 +357,10 @@ void moverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
                         (matriz[carro->x][carro->y + 1] == 'v' && matriz[carro->x][carro->y - 1] == '>'))
                     {
                         carro->viaDupla = 0;
+                        if(posicaoOcupada((carro->x), carro->y + 1, carros)){
+                                desviar(carro, carros);// se a posição pra onde o carro está tentando ir tiver outro carro, tento um possível desvio 
+                            }
+                        else
                         (carro->y)++;
                         breakwhile = 1;
                     }
@@ -353,6 +380,10 @@ void moverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
                             carro->viaDupla = 60;
                         if (carro->viaDupla == 60)
                         {
+                            if(posicaoOcupada((carro->x), carro->y - 1, carros)){
+                                desviar(carro, carros);// se a posição pra onde o carro está tentando ir tiver outro carro, tento um possível desvio 
+                            }
+                            else
                             (carro->y)--;
                             breakwhile = 1;
                         }
@@ -364,6 +395,10 @@ void moverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
                         (matriz[carro->x][carro->y - 1] == 'v' && matriz[carro->x][carro->y + 1] == '<'))
                     {
                         carro->viaDupla = 0;
+                        if(posicaoOcupada((carro->x), carro->y - 1, carros)){
+                                desviar(carro, carros);// se a posição pra onde o carro está tentando ir tiver outro carro, tento um possível desvio 
+                            }
+                        else
                         (carro->y)--;
                         breakwhile = 1;
                     }
@@ -405,7 +440,7 @@ void simularCarros(Carro *carros, Semaforo *semaforos, int tempo_simulacao)
             moverCarro(&carros[i], carros, semaforos, matriz);      // Move cada carro
 
         system("clear");        // Limpa o terminal
-        imprimirMatriz(matriz); // Imprime a matriz
+        imprimirMatriz(matriz, semaforos); // Imprime a matriz
         sleep(1);               // Aguarda 1 segundo antes de atualizar novamente
     }
 }
@@ -530,10 +565,6 @@ int main()
 
     int tempo_simulacao = 30;                          // Tempo total de simulação em segundos
     simularCarros(carros, semaforos, tempo_simulacao); // Inicia a simulação
-
-    for (int i = 0; i < QTD_SEMAFAROS; i++)
-        if (semaforos[i].x < 0 || semaforos[i].x >= TAMANHO_CIDADE_LINHA || semaforos[i].y < 0 || semaforos[i].y >= TAMANHO_CIDADE_COLUNA)
-            printf("Semáforo fora dos limites: x=%d, y=%d\n", semaforos[i].x, semaforos[i].y);
 
     return 0;
 }
