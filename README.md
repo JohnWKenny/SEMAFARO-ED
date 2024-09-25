@@ -91,7 +91,16 @@ Para resolver esse problema, foi implementada uma verificação adicional. Agora
 
 Caso dúvidas pode-se fazer um teste, na função mover carro retire de todas as condições que verificam a posição adjacente, por exemplo, se o carro esta indo para direita sua posiçõa normal seria y + 1, sua posição adjacente seria y - 1.
 
-### O Que Falta
-1. Logica para o sinal amarelo.
-2. Evento aleatorio.
-3. Verificar a condição de desvio.
+### O Que Falta/Problema
+
+#### URGENTE
+[/] Verificar a condição de desvio. 
+[] Modificar lógia do sinal p/ carros não virarem um só (preferencia menor linha)
+[] Colocar para o semáforo descidir o próximo movimento
+[] Carro na frente não sabendo direção por ter outro carro
+
+#### DEPOIS FAZ
+[] Evento aleatorio.
+
+#### DONE
+[x] Logica para o sinal amarelo.
