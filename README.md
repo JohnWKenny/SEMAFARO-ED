@@ -45,7 +45,7 @@ A pilha é usada para armazenar as direções possíveis para o carro se mover (
 
 ## Como a Lógica Funciona
 1. Cada carro se move conforme a pilha vai desimpilhando.
-2. Caso o item que foi desimpilhado não seja igual ao sentido da estrada ele deve ser ignorado.
+2. Caso o item que foi desempilhado não seja igual ao sentido da estrada ele deve ser ignorado.
 3. Quando a pilha ficar vazia ela é preenchida com os movimentos, isso até achar qual o movimento certo a se fazer.
 
 ## Problema da Lógica (recomendável olhar o código)
@@ -89,7 +89,7 @@ Isso criaria um loop infinito, já que o carro continuaria a se mover entre as m
 
 Para resolver esse problema, foi implementada uma verificação adicional. Agora, a função não apenas verifica a próxima posição à frente, mas também a posição adjacente (a "traseira" do carro). Com essa verificação dupla, o carro evita entrar em loops, pois a lógica impede que ele volte para uma posição já ocupada ou desfavorável. Assim, o movimento fica mais preciso e evita comportamentos erráticos.
 
-Caso dúvidas pode-se fazer um teste, na função mover carro retire de todas as condições que verificam a posição adjacente, por exemplo, se o carro esta indo para direita sua posiçõa normal seria y + 1, sua posição adjacente seria y - 1.
+Caso dúvidas pode-se fazer um teste, na função mover carro retire de todas as condições que verificam a posição adjacente, por exemplo, se o carro está indo para direita sua posição normal seria y + 1, sua posição adjacente seria y - 1.
 
 ### O Que Falta/Problema
 

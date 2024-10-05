@@ -11,7 +11,7 @@
 #define TAMANHO_CIDADE_COLUNA 37 // Define o número de colunas da matriz que representa a cidade
 #define QTD_ESTRADAS 17          // Define a quantidade de estradas na cidade
 #define QTD_CARROS 1             // Define a quantidade de carros
-#define QTD_SEMAFAROS 96         // Define a quantidade de semafaros
+#define QTD_SEMAFOROS 96         // Define a quantidade de semaforos
 
 /*{ ESTRUTURAS }*/
 // Definição da estrutura que representa um carro.
@@ -97,7 +97,7 @@ void atualizarMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], C
                 matriz[i][j] = '.';
 
     // Atualiza as posições dos semáforos com base no estado (verde ou vermelho)
-    for (int i = 0; i < QTD_SEMAFAROS; i++)
+    for (int i = 0; i < QTD_SEMAFOROS; i++)
         matriz[semaforos[i].x][semaforos[i].y] = semaforos[i].estado_verde ? 'G' : 'R';
 
     // Atualiza as posições dos carros na matriz
@@ -193,7 +193,7 @@ bool desviar(Carro *carro, Carro *carros)
 // - semaforos: array de semáforos
 void atualizarSemaforos(Semaforo *semaforos)
 {
-    for (int i = 0; i < QTD_SEMAFAROS; i++)
+    for (int i = 0; i < QTD_SEMAFOROS; i++)
     {
         semaforos[i].contador++;
         if (semaforos[i].estado_verde && semaforos[i].contador >= semaforos[i].tempo_verde)
@@ -450,7 +450,6 @@ void simularCarros(Carro *carros, Semaforo *semaforos, int tempo_simulacao)
 
 int main()
 {
-    Semaforo semaforos[QTD_SEMAFAROS];
     Carro carros[QTD_CARROS] = {
         {1, 0, 1, 0}
     };
@@ -458,125 +457,29 @@ int main()
     initPilha(&carros[0].movimentos);
     preencher(&carros[0].movimentos);
 
+    Semaforo semaforos[QTD_SEMAFOROS];
     // Inicializa os semáforos
-    /*for(int indice_y = 0; indice_y <= 27; indice_y += 3)
+    // OBS: Os eixos x e y parecem estar invertidos, não encontrei a origem do problema, por isso optei por mantê-los assim
+    int i = 0;
+    for(int indice_x = 0; indice_x <= 27; indice_x += 3)
     {
-        for(int indice_x = 0; indice_x <= 36; indice_x += 4)
+        for(int indice_y = 0; indice_y <= 36; indice_y += 4)
         {
-            if((!indice_y || indice_y == 27) && (!indice_x || indice_x == 36)) continue;
+            if((!indice_y || indice_y == 36) && (!indice_x || indice_x == 27)) continue;
 
-            semaforos[] = {};
+            int t_verde = (rand() % 4) + 1;
+            int t_vermelho = (rand() % 4) + 1;
+
+            semaforos[i].x = indice_x;
+            semaforos[i].y = indice_y;
+            semaforos[i].tempo_verde = t_verde;
+            semaforos[i].tempo_vermelho = t_vermelho;
+            semaforos[i].contador = 0;
+            semaforos[i].estado_verde = true;
+            i++;
         }   
-    }*/
+    }
     
-    Semaforo semaforos[] = {
-        {0, 4, 4, 3, 0, true},
-        {0, 8, 4, 2, 0, false},
-        {0, 12, 4, 2, 0, false},
-        {0, 16, 4, 2, 0, false},
-        {0, 20, 4, 2, 0, false},
-        {0, 24, 4, 2, 0, false},
-        {0, 28, 4, 2, 0, false},
-        {0, 32, 4, 2, 0, false},
-
-        {3, 0, 4, 3, 0, true},
-        {3, 8, 4, 2, 0, false},
-        {3, 4, 4, 2, 0, false},
-        {3, 12, 4, 2, 0, false},
-        {3, 16, 4, 2, 0, false},
-        {3, 20, 4, 2, 0, false},
-        {3, 24, 4, 2, 0, false},
-        {3, 28, 4, 2, 0, false},
-        {3, 32, 4, 2, 0, false},
-        {3, 36, 4, 2, 0, false},
-
-        {6, 0, 4, 3, 0, true},
-        {6, 8, 4, 2, 0, false},
-        {6, 4, 4, 2, 0, false},
-        {6, 12, 4, 2, 0, false},
-        {6, 16, 4, 2, 0, false},
-        {6, 20, 4, 2, 0, false},
-        {6, 24, 4, 2, 0, false},
-        {6, 28, 4, 2, 0, false},
-        {6, 32, 4, 2, 0, false},
-        {6, 36, 4, 2, 0, false},
-
-        {9, 0, 4, 3, 0, true},
-        {9, 8, 4, 2, 0, false},
-        {9, 4, 4, 2, 0, false},
-        {9, 12, 4, 2, 0, false},
-        {9, 16, 4, 2, 0, false},
-        {9, 20, 4, 2, 0, false},
-        {9, 24, 4, 2, 0, false},
-        {9, 28, 4, 2, 0, false},
-        {9, 32, 4, 2, 0, false},
-        {9, 36, 4, 2, 0, false},
-
-        {12, 0, 4, 3, 0, true},
-        {12, 4, 4, 2, 0, false},
-        {12, 8, 4, 2, 0, false},
-        {12, 12, 4, 2, 0, false},
-        {12, 16, 4, 2, 0, false},
-        {12, 20, 4, 2, 0, false},
-        {12, 24, 4, 2, 0, false},
-        {12, 28, 4, 2, 0, false},
-        {12, 32, 4, 2, 0, false},
-        {12, 36, 4, 2, 0, false},
-
-        {15, 0, 4, 3, 0, true},
-        {15, 4, 4, 2, 0, false},
-        {15, 8, 4, 2, 0, false},
-        {15, 12, 4, 2, 0, false},
-        {15, 16, 4, 2, 0, false},
-        {15, 20, 4, 2, 0, false},
-        {15, 24, 4, 2, 0, false},
-        {15, 28, 4, 2, 0, false},
-        {15, 32, 4, 2, 0, false},
-        {15, 36, 4, 2, 0, false},
-
-        {18, 0, 4, 3, 0, true},
-        {18, 4, 4, 2, 0, false},
-        {18, 8, 4, 2, 0, false},
-        {18, 12, 4, 2, 0, false},
-        {18, 16, 4, 2, 0, false},
-        {18, 20, 4, 2, 0, false},
-        {18, 24, 4, 2, 0, false},
-        {18, 28, 4, 2, 0, false},
-        {18, 32, 4, 2, 0, false},
-        {18, 36, 4, 2, 0, false},
-
-        {21, 0, 4, 3, 0, true},
-        {21, 4, 4, 2, 0, false},
-        {21, 8, 4, 2, 0, false},
-        {21, 12, 4, 2, 0, false},
-        {21, 16, 4, 2, 0, false},
-        {21, 20, 4, 2, 0, false},
-        {21, 24, 4, 2, 0, false},
-        {21, 28, 4, 2, 0, false},
-        {21, 32, 4, 2, 0, false},
-        {21, 36, 4, 2, 0, false},
-
-        {24, 0, 4, 2, 0, false},
-        {24, 4, 4, 2, 0, false},
-        {24, 8, 4, 2, 0, false},
-        {24, 12, 4, 2, 0, false},
-        {24, 16, 4, 2, 0, false},
-        {24, 20, 4, 2, 0, false},
-        {24, 24, 4, 2, 0, false},
-        {24, 28, 4, 2, 0, false},
-        {24, 32, 4, 2, 0, false},
-        {24, 36, 4, 2, 0, false},
-
-        {27, 4, 4, 2, 0, false},
-        {27, 8, 4, 2, 0, false},
-        {27, 12, 4, 2, 0, false},
-        {27, 16, 4, 2, 0, false},
-        {27, 20, 4, 2, 0, false},
-        {27, 24, 4, 2, 0, false},
-        {27, 28, 4, 2, 0, false},
-        {27, 32, 4, 2, 0, false},
-    };
-
     int tempo_simulacao = 30;                          // Tempo total de simulação em segundos
     simularCarros(carros, semaforos, tempo_simulacao); // Inicia a simulação
 
