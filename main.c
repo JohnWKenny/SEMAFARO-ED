@@ -20,6 +20,7 @@ typedef struct
     int id;       // Identificador do carro
     int x, y;     // Coordenadas X e Y na cidade (matriz)
     int viaDupla; // Indica se o carro está em uma pista dupla e guarda qual o sentido da via
+    int direcaoCarro;
     Pilha movimentos;  // Pilha que guarda os movimentos do carro
 } Carro;
 
@@ -36,6 +37,7 @@ typedef struct
 // Definição da estrutura para estradas.
 typedef struct
 {
+    int id;
     bool direcao; // 0 para vertical, 1 para horizontal
     bool sentido; // 0 para direita/cima, 1 para esquerda/baixo
     bool ehDupla; // Indica se é uma pista dupla
@@ -238,6 +240,7 @@ void moverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
         // Loop para determinar o próximo movimento do carro com base na pilha de movimentos
         while (1)
         {
+
             if (isEmpty(&carro->movimentos))
                 preencher(&carro->movimentos);
 
@@ -447,6 +450,7 @@ void simularCarros(Carro *carros, Semaforo *semaforos, int tempo_simulacao)
 
 int main()
 {
+    Semaforo semaforos[QTD_SEMAFAROS];
     Carro carros[QTD_CARROS] = {
         {1, 0, 1, 0}
     };
@@ -455,6 +459,16 @@ int main()
     preencher(&carros[0].movimentos);
 
     // Inicializa os semáforos
+    /*for(int indice_y = 0; indice_y <= 27; indice_y += 3)
+    {
+        for(int indice_x = 0; indice_x <= 36; indice_x += 4)
+        {
+            if((!indice_y || indice_y == 27) && (!indice_x || indice_x == 36)) continue;
+
+            semaforos[] = {};
+        }   
+    }*/
+    
     Semaforo semaforos[] = {
         {0, 4, 4, 3, 0, true},
         {0, 8, 4, 2, 0, false},
