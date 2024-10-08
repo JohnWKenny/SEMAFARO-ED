@@ -22,6 +22,7 @@ typedef struct
     int viaDupla; // Indica se o carro está em uma pista dupla e guarda qual o sentido da via
     int direcaoCarro;
     Pilha movimentos;  // Pilha que guarda os movimentos do carro
+    int lastmove;
 } Carro;
 
 // Definição da estrutura para um semáforo.
@@ -37,12 +38,18 @@ typedef struct
 // Definição da estrutura para estradas.
 typedef struct
 {
-    int id;
     bool direcao; // 0 para vertical, 1 para horizontal
     bool sentido; // 0 para direita/cima, 1 para esquerda/baixo
     bool ehDupla; // Indica se é uma pista dupla
     int ini;      // Ponto inicial da estrada (linha ou coluna, dependendo da direção)
 } Estrada;
+
+// Configuração das estradas
+Estrada estradas[QTD_ESTRADAS] = {
+    {1, 0, 0, 0}, {1, 1, 0, 27}, {0, 1, 0, 36}, {0, 0, 0, 0}, // Estradas nas extremidades
+    {0, 0, 1, 4}, {0, 0, 1, 8}, {0, 0, 1, 20}, {0, 0, 1, 24}, {0, 0, 1, 28}, {0, 0, 1, 32}, // Estradas verticais
+    {1, 0, 0, 3}, {1, 0, 0, 6}, {1, 0, 1, 12}, {1, 0, 0, 15}, {1, 1, 0, 18}, {1, 1, 0, 21}, {1, 1, 0, 24}  // Estradas horizontais
+};
 
 /*{ FUNÇÕES }*/
 // Função que inicializa a matriz da cidade, colocando pontos (.) em todas as posições e definindo as estradas com seus respectivos símbolos.
@@ -53,13 +60,6 @@ void inicializarMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA])
     for (int i = 0; i < TAMANHO_CIDADE_LINHA; i++)
         for (int j = 0; j < TAMANHO_CIDADE_COLUNA; j++) 
             matriz[i][j] = '.'; // Inicializa todas as posições com um ponto (vazio)
-
-    // Configuração das estradas
-    Estrada estradas[QTD_ESTRADAS] = {
-        {1, 0, 0, 0}, {1, 1, 0, 27}, {0, 1, 0, 36}, {0, 0, 0, 0}, // Estradas nas extremidades
-        {0, 0, 1, 4}, {0, 0, 1, 8}, {0, 0, 1, 20}, {0, 0, 1, 24}, {0, 0, 1, 28}, {0, 0, 1, 32}, // Estradas verticais
-        {1, 0, 0, 3}, {1, 0, 0, 6}, {1, 0, 1, 12}, {1, 0, 0, 15}, {1, 1, 0, 18}, {1, 1, 0, 21}, {1, 1, 0, 24}  // Estradas horizontais
-    };
 
     // Desenho das estradas na matriz, com símbolos diferentes dependendo da direção e sentido
     for (int i = 0; i < QTD_ESTRADAS; i++) 
@@ -220,6 +220,87 @@ void preencher(Pilha *movimentos)
     push(movimentos, '<');
 }
 
+// Seta o primeiro movimento do carro
+// Parâmetros:
+// - carro: ponteiro para o carro que tentará desviar
+// - matriz: matriz representando a cidade
+void firstmovecar(Carro *carro, char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA])
+{
+    if(carro->x - 1 >= 0 && carro->x + 1 < TAMANHO_CIDADE_LINHA && matriz[carro->x - 1][carro->y] != '.' && matriz[carro->x + 1][carro->y] != '.')
+    {
+        for(int ind_estrada = 0; ind_estrada < QTD_ESTRADAS; ind_estrada++)
+        {
+            if(estradas[ind_estrada].direcao) continue;
+            
+            if(estradas[ind_estrada].ini == carro->y)
+            {
+
+                if(estradas[ind_estrada].sentido) carro->lastmove = 'V';
+                else if(!estradas[ind_estrada].sentido) carro->lastmove = '^';
+                else 
+                {
+                    int coninueWhile = 1;
+                    while(coninueWhile)
+                    {
+                        switch (pop(&carro->movimentos))
+                        {
+                            case 94: // '^' - Mover para cima
+                                carro->lastmove = '^';
+                                coninueWhile != coninueWhile;
+                                break;
+                            case 86: // 'V' - Mover para baixo
+                                carro->lastmove = 'V';
+                                coninueWhile != coninueWhile;
+                                break;
+                            default:
+                                break;
+                        }   
+                    }
+                }
+            }
+            
+        }
+        
+    } else
+    {
+        
+        for(int ind_estrada = 0; ind_estrada < QTD_ESTRADAS; ind_estrada++)
+        {
+            if(!estradas[ind_estrada].direcao) continue;
+            
+            if(estradas[ind_estrada].ini == carro->x)
+            {
+                
+                if(estradas[ind_estrada].sentido) carro->lastmove = '<';
+                else if(!estradas[ind_estrada].sentido) carro->lastmove = '>';
+                else 
+                {
+                    int coninueWhile = 1;
+                    while(coninueWhile)
+                    {
+                        switch (pop(&carro->movimentos))
+                        {
+                            case 62: // '>' - Mover para direita
+                                carro->lastmove = '>';
+                                coninueWhile = 0;
+                                break;
+                            case 60: // '<' - Mover para esquerda
+                                carro->lastmove = '<';
+                                coninueWhile = 0;
+                                break;
+                            default:
+                                break;
+                        }   
+                    }
+                }
+            }
+            
+        }
+    }
+    
+    
+}
+
 // Move um carro de acordo com sua velocidade e o estado dos semáforos
 // Parâmetros:
 // - carro: ponteiro para o carro que tentará desviar
@@ -234,7 +315,7 @@ void moverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
         // Se a pilha de movimentos estiver vazia, preenche-a com novos movimentos (que esta fixo so para continuar a logica)
         if (isEmpty(&carro->movimentos))
             preencher(&carro->movimentos);
-
+        
         int breakwhile = 0;
         
         // Loop para determinar o próximo movimento do carro com base na pilha de movimentos
@@ -430,6 +511,7 @@ void moverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
 void simularCarros(Carro *carros, Semaforo *semaforos, int tempo_simulacao)
 {
     srand(time(0)); // Inicializa o gerador de números aleatórios
+    int firstmovecars = 1; // Para setar o primeiro movimento dos carros somente uma vez
 
     while (true)
     {
@@ -438,6 +520,12 @@ void simularCarros(Carro *carros, Semaforo *semaforos, int tempo_simulacao)
         char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA];
         inicializarMatriz(matriz);                                  // Inicializa a matriz com pontos e vértices
         atualizarMatriz(matriz, carros, semaforos);                 // Atualiza a matriz com carros e semáforos
+        
+        if(firstmovecars) 
+        {
+            firstmovecar(&carros[0], matriz);
+            firstmovecars = 0;
+        }
 
         for (int i = 0; i < QTD_CARROS; i++)
             moverCarro(&carros[i], carros, semaforos, matriz);      // Move cada carro
@@ -451,7 +539,7 @@ void simularCarros(Carro *carros, Semaforo *semaforos, int tempo_simulacao)
 int main()
 {
     Carro carros[QTD_CARROS] = {
-        {1, 0, 1, 0}
+        {1, 26, 0, 0, 0}
     };
 
     initPilha(&carros[0].movimentos);
