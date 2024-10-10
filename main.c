@@ -20,7 +20,7 @@ typedef struct
     int id;       // Identificador do carro
     int x, y;     // Coordenadas X e Y na cidade (matriz)
     int viaDupla; // Indica se o carro está em uma pista dupla e guarda qual o sentido da via
-    int direcaoCarro;
+    int direcaoCarro; //******/
     Pilha movimentos;  // Pilha que guarda os movimentos do carro
     int lastmove;
     int velocidade;
@@ -330,6 +330,7 @@ void DefinirMovimentoNoSemaforo(Carro *carro, Carro *carros, Semaforo *semaforos
                         }
                         else{
                             carro->lastmove = '^';
+                            carro->parado = false; 
                             return;
                         }    
                     case 86: //v
@@ -343,6 +344,7 @@ void DefinirMovimentoNoSemaforo(Carro *carro, Carro *carros, Semaforo *semaforos
                             }
                         else{
                                 carro->lastmove = 'v';
+                                carro->parado = false; 
                                 return;
                         }
                     case 62: //>
@@ -356,6 +358,7 @@ void DefinirMovimentoNoSemaforo(Carro *carro, Carro *carros, Semaforo *semaforos
                                 }
                         else{
                             carro->lastmove = '>';
+                            carro->parado = false; 
                             return;
                         }
                     case 60: //<
@@ -369,6 +372,7 @@ void DefinirMovimentoNoSemaforo(Carro *carro, Carro *carros, Semaforo *semaforos
                         }
                         else{
                             carro->lastmove = '<';
+                            carro->parado = false; 
                             return;
                         }
                         
@@ -392,6 +396,7 @@ void DefinirMovimentoNoSemaforo(Carro *carro, Carro *carros, Semaforo *semaforos
                             }
                             else{
                                 carro->lastmove = '^';
+                                carro->parado = false; 
                                 return;
                             }    
                         case 86: //v
@@ -405,6 +410,7 @@ void DefinirMovimentoNoSemaforo(Carro *carro, Carro *carros, Semaforo *semaforos
                                 }
                             else{
                                 carro->lastmove = 'v';
+                                carro->parado = false; 
                                 return;
                             }
                         case 62: //>
@@ -418,6 +424,7 @@ void DefinirMovimentoNoSemaforo(Carro *carro, Carro *carros, Semaforo *semaforos
                                     }
                             else{
                                 carro->lastmove = '>';
+                                carro->parado = false; 
                                 return;
                             }
                         case 60: //<
@@ -431,6 +438,7 @@ void DefinirMovimentoNoSemaforo(Carro *carro, Carro *carros, Semaforo *semaforos
                                     }
                             else{
                                 carro->lastmove = '<';
+                                carro->parado = false; 
                                 return;
                             }
                         default:
@@ -443,6 +451,30 @@ void DefinirMovimentoNoSemaforo(Carro *carro, Carro *carros, Semaforo *semaforos
         return;
     }
 }
+
+void MoverCarro(Carro *carro, Semaforo *semaforos, char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA]) {
+
+    // Se o carro não está parado, realiza o próximo movimento
+        if (!carro->parado) {
+        switch (carro->lastmove) {
+            case '^': // Mover para cima
+                if (carro->x - 1 >= 0) carro->x--;
+                break;
+            case 'V': // Mover para baixo
+                if (carro->x + 1 < TAMANHO_CIDADE_LINHA) carro->x++;
+                break;
+            case '>': // Mover para direita
+                if (carro->y + 1 < TAMANHO_CIDADE_COLUNA) carro->y++;
+                break;
+            case '<': // Mover para esquerda
+                if (carro->y - 1 >= 0) carro->y--;
+                break;
+            default:
+                break;
+            }
+        }
+}
+    
 
 // Simula a movimentação dos carros e o estado dos semáforos por um determinado tempo
 // Parâmetros:
@@ -468,9 +500,12 @@ void simularCarros(Carro *carros, Semaforo *semaforos, int tempo_simulacao)
             firstmovecars = 0;
         }
 
-        for (int i = 0; i < QTD_CARROS; i++)
-            DefinirMovimentoNoSemaforo(&carros[i], carros, semaforos, matriz);      // Define o movimento do lastmove quando está no semáforo
-
+        for (int i = 0; i < QTD_CARROS; i++){
+            if(matriz[carros[i].x][carros[i].y] == 'R'||matriz[carros[i].x][carros[i].y] =='G'|| matriz[carros[i].x][carros[i].y] =='V'){
+                DefinirMovimentoNoSemaforo(&carros[i], carros, semaforos, matriz);      // Define o movimento do lastmove quando está no semáforo
+            }
+            MoverCarro(&carros[i], semaforos, matriz);
+        }
         system("clear");        // Limpa o terminal
         imprimirMatriz(matriz, semaforos); // Imprime a matriz
         sleep(1);               // Aguarda 1 segundo antes de atualizar novamente
@@ -480,7 +515,7 @@ void simularCarros(Carro *carros, Semaforo *semaforos, int tempo_simulacao)
 int main()
 {
     Carro carros[QTD_CARROS] = {
-        {1, 0, 0, 1, 0, 1, false}
+        {1, 1, 0, 1, 0, 1, false}
     };
 
     initPilha(&carros[0].movimentos);
@@ -497,7 +532,7 @@ int main()
             if((!indice_y || indice_y == 36) && (!indice_x || indice_x == 27)) continue;
 
             int t_verde = (rand() % 4) + 1;
-            int t_vermelho = (rand() % 4) + 1;
+            int t_vermelho = (rand() % 4) +     1;
 
             semaforos[i].x = indice_x;
             semaforos[i].y = indice_y;
@@ -509,7 +544,7 @@ int main()
         }   
     }
     
-    int tempo_simulacao = 30;                          // Tempo total de simulação em segundos
+    int tempo_simulacao = 1000;                          // Tempo total de simulação em segundos
     simularCarros(carros, semaforos, tempo_simulacao); // Inicia a simulação
 
     return 0;
