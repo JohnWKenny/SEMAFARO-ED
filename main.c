@@ -211,9 +211,10 @@ void atualizarSemaforos(Semaforo *semaforos)
     }
 }
 
-// Função que vai preencher cada pilha de carros. Não esta completa, a função so coloca 4 movimentos iguais para cada carro, ela foi feita para continuar a logica do programa
+// Função que vai preencher cada pilha de carros.
 // Parâmetros:
-// - movimentos: pilha de movimentos
+// - movimentos: pilha de movimentos, carro: carro atual.
+// Pilha de acordo com a casa das unidades do id do carro
 void preencher(Pilha *movimentos, Carro *carro)
 {
     if((carro->id % 10 == 0 || carro->id % 10 == 1) && carro->id < 10)
@@ -541,12 +542,17 @@ void MoverCarro(Carro *carro, Semaforo *semaforos, char matriz[TAMANHO_CIDADE_LI
         }
 }
 
+// Função para adicionar os carros na lista
+// Parâmetros:
+// Lista de carros
 void addCar(Carro *carros)
 {
     for(int i = 0; i < QTD_CARROS; i++)
     {
         carros[i].id = i;
         int px = i / 10, py = i % 10;
+
+        // De acordo com a casa das unidades o x vai para uma rua horizontal específica
         if(px == 0) carros[i].x = 0;
         else if(px == 1) carros[i].x = 3;
         else if(px == 2) carros[i].x = 4;
@@ -558,6 +564,7 @@ void addCar(Carro *carros)
         else if(px == 8) carros[i].x = 24;
         else if(px == 9) carros[i].x = 27;
 
+        // De acordo com a casa das unidades o x vai para uma rua horizontal específica
         if(py == 0) carros[i].y = 2;
         else if(py == 1) carros[i].y = 6;
         else if(py == 2) carros[i].y = 14;
@@ -567,12 +574,12 @@ void addCar(Carro *carros)
         else if(py == 6) carros[i].y = 34;
         else if(py == 7) carros[i].y = 18;
         else if(py == 9) carros[i].y = 18;
+
         carros[i].velocidade = 1;
         carros[i].parado = false;
         initPilha(&carros[i].movimentos);
         preencher(&carros[i].movimentos, &carros[i]);
     }
-    //printcar(carros);
 }    
 
 // Simula a movimentação dos carros e o estado dos semáforos por um determinado tempo
