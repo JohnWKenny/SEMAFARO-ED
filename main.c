@@ -23,6 +23,8 @@ typedef struct
     int direcaoCarro;
     Pilha movimentos;  // Pilha que guarda os movimentos do carro
     int lastmove;
+    int velocidade;
+    bool parado;
 } Carro;
 
 // Definição da estrutura para um semáforo.
@@ -148,7 +150,7 @@ bool posicaoOcupada(int x, int y, Carro *carros)
 
     for (int i = 0; i < QTD_CARROS; i++)
     {
-        if (carros[i].x == x && carros[i].y == y) 
+        if (carros[i].x == x && carros[i].y == y && carros[i].parado) 
             count++;
 
         if (count > 1)
@@ -307,199 +309,138 @@ void firstmovecar(Carro *carro, char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE
 // - carros: array de carros
 // - semaforos: array de semáforos
 // - matriz: matriz representando a cidade
-void moverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA])
+void DefinirMovimentoNoSemaforo(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA])
 {
-    // Se a nova posição não está ocupada, move o carro; caso contrário, tenta desviar
-    if (!posicaoOcupada(carro->x, carro->y, carros))
-    {
-        // Se a pilha de movimentos estiver vazia, preenche-a com novos movimentos (que esta fixo so para continuar a logica)
         if (isEmpty(&carro->movimentos))
-            preencher(&carro->movimentos);
-        
-        int breakwhile = 0;
-        
-        // Loop para determinar o próximo movimento do carro com base na pilha de movimentos
-        while (1)
         {
-
-            if (isEmpty(&carro->movimentos))
-                preencher(&carro->movimentos);
-
-            // Realiza o movimento com base no valor retirado da pilha
-            switch (pop(&carro->movimentos))
-            {
-                case 94: // '^' - Mover para cima
-                    if (matriz[carro->x - 1][carro->y] == 'R' && // Se o proximo movimento for um sinal vermelho E
-                       (matriz[carro->x + 1][carro->y] == '^' || // O movimento adjascente for para cima OU
-                       (matriz[carro->x + 1][carro->y] == '|' && carro->viaDupla == 94))) // O movimento adjascente for uma via dupla E a via que o carro esta é para cima
-                    {
-                        breakwhile = 1;
-                        break;
-                    }
-
-                    if (matriz[carro->x - 1][carro->y] == '|' || // Se o proximo movimento for uma via dupla OU
-                    (matriz[carro->x - 1][carro->y] == 'G' && matriz[carro->x + 1][carro->y] == '|')) // O proximo movimento for um sinal verde E o anterior uma via dupla
-                    {
-                        // Se o carro não estava numa via dupla coloca o sentido dela
-                        if (carro->viaDupla == 0)
-                            carro->viaDupla = 94;
+            preencher(&carro->movimentos);
+        }
+        char movimentodocarro = pop(&carro->movimentos);
+        if((carro->lastmove == 'v' || carro->lastmove == '^') && (matriz[carro->x][carro->y+1] == 'R'|| matriz[carro->x][carro->y-carro->velocidade] == 'R') || matriz[carro->x][carro->y+carro->velocidade]== 'V'|| matriz[carro->x][carro->y-1]== 'V'){
+            while(1){
+                switch(movimentodocarro){
+                    case 94: //^
+                        if(posicaoOcupada(carro->x, carro->y-carro->velocidade, carros) || matriz[carro->x][carro->y-carro->velocidade] != '^'|| matriz[carro->x][carro->y-carro->velocidade]!='|'){
+                            if (isEmpty(&carro->movimentos))
+                            {
+                            preencher(&carro->movimentos);
+                            }
+                            movimentodocarro = pop(&carro->movimentos);
+                            continue;
+                        }
+                        else{
+                            carro->lastmove = '^';
+                            return;
+                        }    
+                    case 86: //v
+                        if(posicaoOcupada(carro->x, carro->y+carro->velocidade, carros)|| matriz[carro->x][carro->y+carro->velocidade] != 'v'||matriz[carro->x][carro->y+carro->velocidade]!='|'){
+                                if (isEmpty(&carro->movimentos))
+                                {
+                                preencher(&carro->movimentos);
+                                }
+                                movimentodocarro = pop(&carro->movimentos);
+                                continue;
+                            }
+                        else{
+                                carro->lastmove = 'v';
+                                return;
+                        }
+                    case 62: //>
+                        if(posicaoOcupada(carro->x+carro->velocidade, carro->y, carros)|| matriz[carro->x+carro->velocidade][carro->y] != '>'|| matriz[carro->x+carro->velocidade][carro->y]!='-'){
+                                    if (isEmpty(&carro->movimentos))
+                                    {
+                                    preencher(&carro->movimentos);
+                                    }
+                                    movimentodocarro = pop(&carro->movimentos);
+                                    continue;
+                                }
+                        else{
+                            carro->lastmove = '>';
+                            return;
+                        }
+                    case 60: //<
+                        if(posicaoOcupada(carro->x-carro->velocidade, carro->y, carros)|| matriz[carro->x-carro->velocidade][carro->y] != '<'|| matriz[carro->x-carro->velocidade][carro->y]!='-'){
+                            if (isEmpty(&carro->movimentos))
+                                {
+                                preencher(&carro->movimentos);
+                                }
+                                movimentodocarro = pop(&carro->movimentos);
+                                continue;
+                        }
+                        else{
+                            carro->lastmove = '<';
+                            return;
+                        }
                         
-                        // Caso o sentido da via dupla seja pra cima
-                        if (carro->viaDupla == 94)
-                        {
-                            if(posicaoOcupada((carro->x) - 1,  carro->y, carros)){
-                                desviar(carro, carros);// se a posição pra onde o carro está tentando ir tiver outro carro, tento um possível desvio 
-                            }
-                            else
-                            (carro->x)--; // Andando para cima
-                            breakwhile = 1;
-                        }
-
-                        break;
-                    }
-
-                    if ((carro->x != 0 && matriz[carro->x - 1][carro->y] == '^') ||
-                        (matriz[carro->x - 1][carro->y] == 'G' && matriz[carro->x + 1][carro->y] == '^') ||
-                        (matriz[carro->x - 1][carro->y] == 'v' && matriz[carro->x + 1][carro->y] == '^'))
-                    {
-                        carro->viaDupla = 0; // O carro não esta numa vida 
-                        if(posicaoOcupada((carro->x) - 1, carro->y, carros)){
-                                desviar(carro, carros); // se a posição pra onde o carro está tentando ir tiver outro carro, tento um possível desvio 
-                            }
-                        else
-                        (carro->x)--; // Andando para cima
-                        breakwhile = 1;
-                    }
-                    break;
-                // A partir daqui a logica se repete, apenas alterando o sinal
-                case 86: // 'V' - Mover para baixo
-                    if (matriz[carro->x + 1][carro->y] == 'R' &&
-                       (matriz[carro->x - 1][carro->y] == 'V' ||
-                       (matriz[carro->x - 1][carro->y] == '|' && carro->viaDupla == 86))) 
-                    {
-                        breakwhile = 1;
-                        break;
-                    }
-
-                    if (matriz[carro->x + 1][carro->y] == '|' || 
-                        (matriz[carro->x + 1][carro->y] == 'G' && matriz[carro->x - 1][carro->y] == '|')) 
-                    {
-                        if (carro->viaDupla == 0)
-                            carro->viaDupla = 86;
-                        if (carro->viaDupla == 86)
-                        {
-                            if(posicaoOcupada((carro->x) + 1, carro->y, carros)){
-                                desviar(carro, carros);// se a posição pra onde o carro está tentando ir tiver outro carro, tento um possível desvio 
-                            }
-                            else
-                            (carro->x)++;
-                            breakwhile = 1;
-                        }
-                        break;
-                    }
-
-                    if ((carro->x != 36 && matriz[carro->x + 1][carro->y] == 'V') ||
-                        (matriz[carro->x + 1][carro->y] == 'G' && matriz[carro->x - 1][carro->y] == 'V') ||
-                        (matriz[carro->x + 1][carro->y] == 'v' && matriz[carro->x - 1][carro->y] == 'V'))
-                    {
-                        carro->viaDupla = 0;
-                        if(posicaoOcupada((carro->x) + 1, carro->y, carros)){
-                                desviar(carro, carros);// se a posição pra onde o carro está tentando ir tiver outro carro, tento um possível desvio 
-                            }
-                        else
-                        (carro->x)++;
-                        breakwhile = 1;
-                    }
-                    break;
-                case 62: // '>' - Mover para direita
-                    if (matriz[carro->x][carro->y + 1] == 'R' && 
-                       (matriz[carro->x][carro->y - 1] == '>' || 
-                       (matriz[carro->x][carro->y - 1] == '-' && carro->viaDupla == 62))) 
-                    {
-                        breakwhile = 1;
-                        break;
-                    }
-
-                    if (matriz[carro->x][carro->y + 1] == '-')
-                    {
-                        if (carro->viaDupla == 0)
-                            carro->viaDupla = 62;
-                        if (carro->viaDupla == 62)
-                        {
-                            if(posicaoOcupada((carro->x), carro->y +1, carros)){
-                                desviar(carro, carros);// se a posição pra onde o carro está tentando ir tiver outro carro, tento um possível desvio 
-                            }
-                        else
-                            (carro->y)++;
-                            breakwhile = 1;
-                        }
-                        break;
-                    }
-
-                    if ((carro->y != 27 && matriz[carro->x][carro->y + 1] == '>') ||
-                        (matriz[carro->x][carro->y + 1] == 'G' && matriz[carro->x][carro->y - 1] == '>') ||
-                        (matriz[carro->x][carro->y + 1] == 'v' && matriz[carro->x][carro->y - 1] == '>'))
-                    {
-                        carro->viaDupla = 0;
-                        if(posicaoOcupada((carro->x), carro->y + 1, carros)){
-                                desviar(carro, carros);// se a posição pra onde o carro está tentando ir tiver outro carro, tento um possível desvio 
-                            }
-                        else
-                        (carro->y)++;
-                        breakwhile = 1;
-                    }
-                    break;
-                case 60: // '<' - Mover para esquerda
-                    if (matriz[carro->x][carro->y - 1] == 'R' && 
-                       (matriz[carro->x][carro->y + 1] == '<' || 
-                       (matriz[carro->x][carro->y + 1] == '-' && carro->viaDupla == 60))) 
-                    {
-                        breakwhile = 1;
-                        break;
-                    }
-
-                    if (matriz[carro->x][carro->y - 1] == '-')
-                    {
-                        if (carro->viaDupla == 0)
-                            carro->viaDupla = 60;
-                        if (carro->viaDupla == 60)
-                        {
-                            if(posicaoOcupada((carro->x), carro->y - 1, carros)){
-                                desviar(carro, carros);// se a posição pra onde o carro está tentando ir tiver outro carro, tento um possível desvio 
-                            }
-                            else
-                            (carro->y)--;
-                            breakwhile = 1;
-                        }
-                        break;
-                    }
-
-                    if ((carro->y != 0 && matriz[carro->x][carro->y - 1] == '<') ||
-                        (matriz[carro->x][carro->y - 1] == 'G' && matriz[carro->x][carro->y + 1] == '<') ||
-                        (matriz[carro->x][carro->y - 1] == 'v' && matriz[carro->x][carro->y + 1] == '<'))
-                    {
-                        carro->viaDupla = 0;
-                        if(posicaoOcupada((carro->x), carro->y - 1, carros)){
-                                desviar(carro, carros);// se a posição pra onde o carro está tentando ir tiver outro carro, tento um possível desvio 
-                            }
-                        else
-                        (carro->y)--;
-                        breakwhile = 1;
-                    }
-                    break;
-                default:
-                    break;
+                        default:
+                            break;
+                }
+ 
             }
-
-            if (breakwhile)
-                break;
+        }
+        else if((carro->lastmove == '>'|| carro->lastmove =='<') && (matriz[carro->x][carro->y]== 'G'|| matriz[carro->x][carro->y]== 'V')){
+            while(1){
+                    switch(movimentodocarro){
+                        case 94: //^
+                            if(posicaoOcupada(carro->x, carro->y-carro->velocidade, carros)|| matriz[carro->x][carro->y-carro->velocidade] != '^'|| matriz[carro->x][carro->y-carro->velocidade]!='|'){
+                                if (isEmpty(&carro->movimentos))
+                                {
+                                    preencher(&carro->movimentos);
+                                }
+                                movimentodocarro = pop(&carro->movimentos);
+                                continue;
+                            }
+                            else{
+                                carro->lastmove = '^';
+                                return;
+                            }    
+                        case 86: //v
+                            if(posicaoOcupada(carro->x, carro->y+carro->velocidade, carros) || matriz[carro->x][carro->y+carro->velocidade] != 'v'|| matriz[carro->x][carro->y+carro->velocidade]!='|'){
+                                if (isEmpty(&carro->movimentos))
+                                    {
+                                    preencher(&carro->movimentos);
+                                    }
+                                    movimentodocarro = pop(&carro->movimentos);
+                                    continue;
+                                }
+                            else{
+                                carro->lastmove = 'v';
+                                return;
+                            }
+                        case 62: //>
+                            if(posicaoOcupada(carro->x+carro->velocidade, carro->y, carros)|| matriz[carro->x+carro->velocidade][carro->y] != '>'|| matriz[carro->x+carro->velocidade][carro->y]!='-'){
+                                        if (isEmpty(&carro->movimentos))
+                                        {
+                                        preencher(&carro->movimentos);
+                                        }
+                                        movimentodocarro = pop(&carro->movimentos);
+                                        continue;
+                                    }
+                            else{
+                                carro->lastmove = '>';
+                                return;
+                            }
+                        case 60: //<
+                            if(posicaoOcupada(carro->x-carro->velocidade, carro->y, carros)|| matriz[carro->x-carro->velocidade][carro->y] != '<' || matriz[carro->x-carro->velocidade][carro->y]!='-'){
+                                        if (isEmpty(&carro->movimentos))
+                                        {
+                                        preencher(&carro->movimentos);
+                                        }
+                                        movimentodocarro = pop(&carro->movimentos);
+                                        continue;
+                                    }
+                            else{
+                                carro->lastmove = '<';
+                                return;
+                            }
+                        default:
+                            break;
+            }
         }
     }
-    else
-    {
-        // Lembrando que a logica de desviar nao foi testada
-        if (!desviar(carro, carros))
-            printf("Carro %d não conseguiu se mover e permanece na posição (%d, %d).\n", carro->id, carro->x, carro->y);
+    else{
+        carro->parado = true;
+        return;
     }
 }
 
@@ -528,7 +469,7 @@ void simularCarros(Carro *carros, Semaforo *semaforos, int tempo_simulacao)
         }
 
         for (int i = 0; i < QTD_CARROS; i++)
-            moverCarro(&carros[i], carros, semaforos, matriz);      // Move cada carro
+            DefinirMovimentoNoSemaforo(&carros[i], carros, semaforos, matriz);      // Define o movimento do lastmove quando está no semáforo
 
         system("clear");        // Limpa o terminal
         imprimirMatriz(matriz, semaforos); // Imprime a matriz
@@ -539,7 +480,7 @@ void simularCarros(Carro *carros, Semaforo *semaforos, int tempo_simulacao)
 int main()
 {
     Carro carros[QTD_CARROS] = {
-        {1, 26, 0, 0, 0}
+        {1, 0, 0, 1, 0, 1, false}
     };
 
     initPilha(&carros[0].movimentos);
