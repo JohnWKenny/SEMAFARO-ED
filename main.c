@@ -501,14 +501,15 @@ void simularCarros(Carro *carros, Semaforo *semaforos, int tempo_simulacao)
         }
 
         for (int i = 0; i < QTD_CARROS; i++){
-            if(matriz[carros[i].x][carros[i].y] == 'R'||matriz[carros[i].x][carros[i].y] =='G'|| matriz[carros[i].x][carros[i].y] =='V'){
-                DefinirMovimentoNoSemaforo(&carros[i], carros, semaforos, matriz);      // Define o movimento do lastmove quando está no semáforo
-            }
-            MoverCarro(&carros[i], semaforos, matriz);
+        if(matriz[carros[i].x][carros[i].y] == 'R'||matriz[carros[i].x][carros[i].y] =='G'|| matriz[carros[i].x][carros[i].y] =='V'){
+            DefinirMovimentoNoSemaforo(&carros[i], carros, semaforos, matriz);      // Define o movimento do lastmove quando está no semáforo
         }
+        MoverCarro(&carros[i], semaforos, matriz);
+        
         system("clear");        // Limpa o terminal
         imprimirMatriz(matriz, semaforos); // Imprime a matriz
         sleep(1);               // Aguarda 1 segundo antes de atualizar novamente
+        }
     }
 }
 
