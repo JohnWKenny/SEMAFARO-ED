@@ -133,15 +133,50 @@ void atualizarMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], C
 // Imprime a matriz da cidade no terminal com carros, semáforos e ruas
 // Parâmetros:
 // - matriz: matriz representando a cidade
-void imprimirMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], Semaforo *semaforos)
+void imprimirMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], Semaforo *semaforos, Carro *carros)
 {
     for (int i = 0; i < TAMANHO_CIDADE_LINHA; i++)
     {
         for (int j = 0; j < TAMANHO_CIDADE_COLUNA; j++)
         {
             char celula = matriz[i][j];
-            if (celula == 'C')
-                printf("🚗 "); // Representa um carro
+            if (celula == 'C'){
+                 for(int i = 0; i < QTD_CARROS; i++)
+                {
+                    if((carros[i].id) % 10 == 0){
+                        printf("🚙 ");
+                    }
+                    else if((carros[i].id) % 10 == 1){
+                        printf("🚗 "); // Representa um carro
+                    }
+                    else if((carros[i].id) % 10 == 2){
+                        printf("🚐 "); // Representa um carro
+                    }
+                    else if((carros[i].id) % 10 == 2){
+                        printf("🚓 "); // Representa um carro
+                    }
+                    else if((carros[i].id) % 10 == 4){
+                        printf("🛵 "); // Representa um carro
+                    }
+                    else if((carros[i].id) % 10 == 5){
+                        printf("🏍️ "); // Representa um carro
+                    }
+                    else if((carros[i].id) % 10 == 6){
+                        printf("🚕 "); // Representa um carro
+                    }
+                    else if((carros[i].id) % 10 == 7){
+                        printf("🚌 "); // Representa um carro
+                    }
+                    else if((carros[i].id) % 10 == 8){
+                        printf("🚐 "); // Representa um carro
+                    }
+                    else if((carros[i].id) % 10 == 9){
+                        printf("🚒 "); // Representa um carro
+                    }
+                }
+        
+            }
+                
             else if (celula == 'v')
                 printf("● "); // Representa um vertice
             else if (celula == 'A')
@@ -149,7 +184,7 @@ void imprimirMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], Se
             else if (celula == 'G')
                 printf("🟢 "); // Representa um semáforo verde
             else if(celula == 'Q'){
-                printf("⚪ ");
+                printf("⚠️ ");
             }
             else if (celula == 'R')
                 if (!semaforos[i].estado_verde && semaforos[i].contador < (semaforos[i].tempo_vermelho)/2)
@@ -681,7 +716,7 @@ void simularCarros(Carro *carros, Semaforo *semaforos, int tempo_simulacao)
         char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA];   // Inicializa a Matriz
         inicializarMatriz(matriz);                                  // Inicializa a matriz com pontos e vértices
         atualizarMatriz(matriz, carros, semaforos);                 // Atualiza a matriz com carros e semáforos
-        imprimirMatriz(matriz, semaforos);                          // Imprime a matriz 
+        imprimirMatriz(matriz, semaforos, carros);                          // Imprime a matriz 
         sleep(1);                                                   // Aguarda 1 segundo antes de atualizar novamente
         
         for (int i = QTD_CARROS; i >= 0; i--){
