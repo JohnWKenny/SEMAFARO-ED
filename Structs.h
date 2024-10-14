@@ -2,7 +2,7 @@
 #define STRUCTS_H
 
 #define QTD_ESTRADAS 17
-#define LEN_MAX 100
+#define LEN_MAX 80
 
 //Definição para pilha
 typedef struct {

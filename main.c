@@ -1,182 +1,153 @@
-#ifndef Matriz_h
-#define Matriz_h
+/*{ BIBLIOTECAS }*/
+#include <stdio.h>    // Biblioteca para funções de entrada e saída, como printf e scanf
+#include <stdlib.h>   // Biblioteca para funções como malloc, free, rand e system
+#include <stdbool.h>  // Biblioteca para usar o tipo booleano em C
+#include <time.h>     // Biblioteca para manipulação de tempo, como gerar números aleatórios com base no tempo atual
+#include <unistd.h>   // Biblioteca para a função sleep, usada para pausas na execução do programa
+#include "Structs.h"  // Arquivo de cabeçalho para definição de structs usadas no código
+#include "Matriz.h"   // Arquivo de cabeçalho para funções relacionadas à matriz da cidade
+#include "Carros.h"   // Arquivo de cabeçalho para funções relacionadas aos carros
+#include "Semaforos.h"// Arquivo de cabeçalho para funções relacionadas aos semáforos
 
-// Definindo constantes para a dimensão da matriz e quantidade de elementos
+/*{ CONSTANTES }*/
 #define TAMANHO_CIDADE_LINHA 28  // Define o número de linhas da matriz que representa a cidade
 #define TAMANHO_CIDADE_COLUNA 37 // Define o número de colunas da matriz que representa a cidade
 #define QTD_ESTRADAS 17          // Define a quantidade de estradas na cidade
-#define QTD_CARROS 10            // Define a quantidade de carros
-#define QTD_SEMAFOROS 96         // Define a quantidade de semáforos
+#define QTD_CARROS 30             // Define a quantidade de carros que estarão na simulação
+#define QTD_SEMAFOROS 96         // Define a quantidade de semáforos na cidade
 
-#include "Structs.h" // Inclui a definição de estruturas necessárias
-
-// Declaração de variáveis externas para coordenadas de incidentes
-extern int EntradaIncidentes_1_x, EntradaIncidentes_1_y;
-extern int EntradaIncidentes_2_x, EntradaIncidentes_2_y;
-extern int ativarfluxo, semaforo_x, semaforo_y, direcao;
+// Variáveis globais para as entradas dos incidentes, usadas para determinar pontos específicos na matriz
+int EntradaIncidentes_1_x, EntradaIncidentes_1_y;
+int EntradaIncidentes_2_x, EntradaIncidentes_2_y;
+int ativarfluxo, semaforo_x, semaforo_y, direcao;
 
 
-/*{ FUNÇÕES }*/
+// Array de structs do tipo Estrada, que contém informações sobre as estradas da cidade
+Estrada estradas[QTD_ESTRADAS] = {
+    {1, 0, 0, 0}, {1, 1, 0, 27}, {0, 1, 0, 36}, {0, 0, 0, 0},
+    {0, 0, 1, 4}, {0, 0, 1, 8}, {0, 0, 1, 20}, {0, 0, 1, 24}, {0, 0, 1, 28}, {0, 0, 1, 32},
+    {1, 0, 0, 3}, {1, 0, 0, 6}, {1, 0, 1, 12}, {1, 0, 0, 15}, {1, 1, 0, 18}, {1, 1, 0, 21}, {1, 1, 0, 24}
+};
 
-int fluxo(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA]) {
-    int resultadofluxo = 0; // Inicializar o resultadofluxo
-    switch (direcao) {
-        case 1: // Para cima
-            if (semaforo_x > 0) {
-                for (int i = 0; i < 3 && semaforo_x - i >= 0; i++) {
-                    if (matriz[semaforo_x - i][semaforo_y] == 'C') resultadofluxo += 1;
-                }
-            }
-            break; 
-
-        case 2: // Para baixo
-            if (semaforo_x < TAMANHO_CIDADE_LINHA - 1) {
-                for (int i = 0; i < 3 && semaforo_x + i < TAMANHO_CIDADE_LINHA; i++) {
-                    if (matriz[semaforo_x + i][semaforo_y] == 'C') resultadofluxo += 1;
-                }
-            }
-            break;
-
-        case 3: // Para esquerda
-            if (semaforo_y > 0) {
-                for (int i = 0; i < 4 && semaforo_y - i >= 0; i++) {
-                    if (matriz[semaforo_x][semaforo_y - i] == 'C') resultadofluxo += 1;
-                }
-            }
-            break;
-
-        case 4: // Para direita
-            if (semaforo_y < TAMANHO_CIDADE_COLUNA - 1) {
-                for (int i = 0; i < 4 && semaforo_y + i < TAMANHO_CIDADE_COLUNA; i++) {
-                    if (matriz[semaforo_x][semaforo_y + i] == 'C') resultadofluxo += 1;
-                }
-            }
-            break; 
-    }
-    return resultadofluxo;
-}
-
-
-
-// Função que inicializa a matriz da cidade, colocando pontos (.) em todas as posições e definindo as estradas com seus respectivos símbolos.
+// Função que simula a movimentação dos carros e o estado dos semáforos por um determinado tempo
 // Parâmetros:
-// - matriz: matriz representando a cidade
-void inicializarMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA])
+// - carros: array de carros
+// - semaforos: array de semáforos
+// - tempo_simulacao: tempo em segundos da simulação
+void simularCarros(Carro *carros, Semaforo *semaforos, int tempo_simulacao)
 {
-    // Inicializa todas as posições da matriz com um ponto (representando vazio)
-    for (int i = 0; i < TAMANHO_CIDADE_LINHA; i++)
-        for (int j = 0; j < TAMANHO_CIDADE_COLUNA; j++)
-            matriz[i][j] = '.'; // Todas as posições são inicialmente vazias
-
-    // Desenho das estradas na matriz, com símbolos diferentes dependendo da direção e sentido
-    for (int i = 0; i < QTD_ESTRADAS; i++) 
+    while (true) // Loop infinito para simulação contínua
     {
-        if (estradas[i].direcao) 
-        { // Se a estrada é horizontal
-            for (int j = 0; j < TAMANHO_CIDADE_COLUNA; j++) 
-                // Define o símbolo da estrada com base em se é dupla ou seu sentido
-                matriz[estradas[i].ini][j] = estradas[i].ehDupla ? '-' : (estradas[i].sentido ? '<' : '>');
-        } 
-        else 
-        { // Se a estrada é vertical
-            for (int j = 0; j < TAMANHO_CIDADE_LINHA; j++) 
-                // Define o símbolo da estrada vertical com base em se é dupla ou seu sentido
-                matriz[j][estradas[i].ini] = estradas[i].ehDupla ? '|' : (estradas[i].sentido ? 'V' : '^');
+        atualizarSemaforos(semaforos);                            // Atualiza os semáforos com novos estados
+        char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA]; // Cria a matriz da cidade
+        inicializarMatriz(matriz);                               // Inicializa a matriz com pontos e vértices
+        atualizarMatriz(matriz, carros, semaforos);              // Atualiza a matriz com a posição dos carros e semáforos
+        imprimirMatriz(matriz, semaforos);                       // Imprime a matriz no terminal
+        sleep(1);                                                // Aguarda 1 segundo antes de atualizar novamente
+        
+        // Move os carros, partindo do último até o primeiro para evitar problemas de sobreposição
+        for (int i = QTD_CARROS; i >= 0; i--) {
+            MoverCarro(&carros[i], carros, semaforos, matriz); // Função que move cada carro
         }
+        system("clear"); // Limpa a tela do terminal para mostrar a próxima atualização da matriz
     }
-
-    // Marca as posições de incidentes com o símbolo 'A'
-    for(int x = EntradaIncidentes_1_x; x <= EntradaIncidentes_2_x; x += 3){
-        for(int y = EntradaIncidentes_1_y; y <= EntradaIncidentes_2_y; y += 4){
-            if(x == EntradaIncidentes_1_x){
-                if(x-2 >= 0)
-                    matriz[x - 2][y] = 'A'; // Marca posição acima do primeiro ponto de incidente
-            }
-            if(x == EntradaIncidentes_2_x){
-                if(x + 2 <= TAMANHO_CIDADE_LINHA)
-                    matriz[x + 2][y] = 'A'; // Marca posição abaixo do segundo ponto de incidente
-            }
-            if(y == EntradaIncidentes_1_y){
-                if(y - 3 >= 0)
-                    matriz[x][y - 3] = 'A'; // Marca posição à esquerda do primeiro ponto de incidente
-            }
-            if(y == EntradaIncidentes_2_y){
-                if(y + 3 <= TAMANHO_CIDADE_COLUNA)
-                    matriz[x][y + 3] = 'A'; // Marca posição à direita do segundo ponto de incidente
-            }
-        }
-    }
-
-    // Marca os vértices (pontos de conexão das estradas) nas extremidades da matriz
-    matriz[0][0] = 'v';
-    matriz[0][TAMANHO_CIDADE_COLUNA - 1] = 'v';
-    matriz[TAMANHO_CIDADE_LINHA - 1][0] = 'v';
-    matriz[TAMANHO_CIDADE_LINHA - 1][TAMANHO_CIDADE_COLUNA - 1] = 'v';
 }
 
-// Atualiza a matriz da cidade com as posições atuais dos carros e semáforos
-// Parâmetros:
-// - matriz: matriz representando a cidade
-// - carros: array de carros contendo as suas respectivas posições
-// - semaforos: array de semáforos com suas posições e estados
-void atualizarMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], Carro *carros, Semaforo *semaforos)
+int main()
 {
-    if(ativarfluxo){
-        printf("fluxo do semaforos linha %d coluna %d:\t %d\n\n",semaforo_x/3, semaforo_y/4, fluxo(matriz));
+    // Solicita ao usuário os vértices de entrada do primeiro incidente
+    printf("Digite o primeiro vertice(Coluna e Linha):\n");
+    scanf("%d %d", &EntradaIncidentes_1_y, &EntradaIncidentes_1_x);
+    system("clear"); // Limpa a tela do terminal após a entrada
+    
+    // Ajusta os valores dos vértices para a escala da matriz (multiplicando por 3 e 4)
+    EntradaIncidentes_1_x *= 3;
+    EntradaIncidentes_1_y *= 4;
+    
+    // Verifica se os vértices de entrada são válidos (se estão dentro dos limites e múltiplos corretos)
+    if (EntradaIncidentes_1_x % 3 != 0 || EntradaIncidentes_1_x < 0 || EntradaIncidentes_1_x > TAMANHO_CIDADE_LINHA ||
+        EntradaIncidentes_1_y % 4 != 0 || EntradaIncidentes_1_y < 0 || EntradaIncidentes_1_y > TAMANHO_CIDADE_COLUNA) {
+        goto erro1; // Redireciona para a mensagem de erro se o vértice for inválido
+    }
+
+    // Solicita ao usuário os vértices de entrada do segundo incidente
+    printf("Digite o segundo vertice:(Coluna e Linha)\n");
+    scanf("%d %d", &EntradaIncidentes_2_y, &EntradaIncidentes_2_x);
+    system("clear"); // Limpa a tela do terminal após a entrada
+    
+    // Ajusta os valores dos vértices para a escala da matriz (multiplicando por 3 e 4)
+    EntradaIncidentes_2_x *= 3;
+    EntradaIncidentes_2_y *= 4;
+    
+    // Verifica se os vértices de entrada são válidos (se estão dentro dos limites e múltiplos corretos)
+    if (EntradaIncidentes_2_x % 3 != 0 || EntradaIncidentes_2_x < 0 || EntradaIncidentes_2_x > TAMANHO_CIDADE_LINHA ||
+        EntradaIncidentes_2_y % 4 != 0 || EntradaIncidentes_2_y < 0 || EntradaIncidentes_2_y > TAMANHO_CIDADE_COLUNA) {
+        goto erro2; // Redireciona para a mensagem de erro se o vértice for inválido
+    }
+
+    // Verifica se o segundo vértice está em uma posição válida em relação ao primeiro vértice
+    if ((EntradaIncidentes_1_x > EntradaIncidentes_2_x) || (EntradaIncidentes_1_y > EntradaIncidentes_2_y)) goto erro3;
+    
+    printf("Ativar fluxo? (Sim: 1 Não: 0)\t");
+    scanf("%d", &ativarfluxo);
+
+    // Loop até que fluxo seja 0 ou 1
+    while (ativarfluxo != 0 && ativarfluxo != 1) {
+        printf("Entrada inválida. Por favor, insira 1 para Sim ou 0 para Não:\t");
+        scanf("%d", &ativarfluxo);
+    }
+
+    // Aqui você pode continuar com o que deseja fazer com o valor de fluxo
+    if (ativarfluxo) {
+        printf("Fluxo ativado.\n");
+    } else {
+        printf("Fluxo desativado.\n");
     }
     
-    // Limpa a matriz das posições anteriores, mantendo apenas as ruas
-    for (int i = 0; i < TAMANHO_CIDADE_LINHA; i++)
-        for (int j = 0; j < TAMANHO_CIDADE_COLUNA; j++)
-            if (matriz[i][j] != '|' && matriz[i][j] != '-' && matriz[i][j] != 'V' && matriz[i][j] != '>' &&
-                matriz[i][j] != '<' && matriz[i][j] != 'v' && matriz[i][j] != '^' && matriz[i][j] != 'A')
-                matriz[i][j] = '.'; // Restaura a célula para vazio se não é uma estrada ou incidente
-
-    // Atualiza as posições dos semáforos com base no estado (verde ou vermelho)
-    for (int i = 0; i < QTD_SEMAFOROS; i++){
-        matriz[semaforos[i].x][semaforos[i].y] = semaforos[i].estado_verde ? 'G' : 'R'; // 'G' para verde e 'R' para vermelho
-        if(semaforos[i].alerta) 
-            matriz[semaforos[i].x][semaforos[i].y] = 'Q'; // 'Q' para semáforo com alerta
-    }
-
-    // Atualiza as posições dos carros na matriz
-    for (int i = 0; i < QTD_CARROS; i++)
-        matriz[carros[i].x][carros[i].y] = 'C'; // 'C' representa um carro
-}
-
-// Imprime a matriz da cidade no terminal com carros, semáforos e ruas
-// Parâmetros:
-// - matriz: matriz representando a cidade
-void imprimirMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], Semaforo *semaforos)
-{
-    for (int i = 0; i < TAMANHO_CIDADE_LINHA; i++)
-    {
-        for (int j = 0; j < TAMANHO_CIDADE_COLUNA; j++)
-        {
-            char celula = matriz[i][j]; // Obtém o valor da célula atual
-            if (celula == 'C')
-                printf("🚗 "); // Representa um carro
-            else if (celula == 'v')
-                printf("● "); // Representa um vértice
-            else if (celula == 'A')
-                printf("🚧 "); // Representa um incidente
-            else if (celula == 'G')
-                printf("🟢 "); // Representa um semáforo verde
-            else if(celula == 'Q'){
-                printf("⚪ "); // Representa um semáforo em alerta
-            }
-            else if (celula == 'R') // Verifica se a célula é um semáforo vermelho
-                if (!semaforos[i].estado_verde && semaforos[i].contador < (semaforos[i].tempo_vermelho)/2)
-                    printf("🟡 "); // Representa um semáforo amarelo
-                else
-                    printf("🔴 "); // Representa um semáforo vermelho
-            else
-                printf("%c ", celula); // Qualquer outra célula é impressa como está
+    if(ativarfluxo){
+        printf("Selecione o Semaforo:(Linha e Coluna)\n");
+        scanf("%d %d", &semaforo_x, &semaforo_y);
+        while(semaforo_x < 0 || semaforo_y > 9 || semaforo_x > 9 || semaforo_y < 0){
+            printf("Posicao Invalida, selecione o Semaforo:(Linha e Coluna)\n");
+            scanf("%d %d", &semaforo_x, &semaforo_y);  
         }
-
-        printf("\n"); // Nova linha após imprimir uma linha da matriz
+        semaforo_y *= 3;
+        semaforo_y *= 4;
+        
+        printf("Selecione uma direcao?\n1:Cima\n2:Baixo\n3:Esquerda\n4:Direita\n");
+        scanf("%d",&direcao);
+        while(direcao < 1 && direcao > 4){
+            printf("direcao invalida\n");
+            printf("selecione uma direcao?\n1:Cima\n2:Baixo\n3:Esquerda\n4:Direita\n");
+            scanf("%d",&direcao);        
+        }
     }
+    // Cria um array de carros para a simulação
+    Carro carros[QTD_CARROS] = {
+        // Inicialização dos carros (detalhes omitidos)
+    };
+    addCar(carros); // Adiciona os carros ao array
+    
+    // Cria um array de semáforos para a simulação
+    Semaforo semaforos[QTD_SEMAFOROS];
+    addSemaforo(semaforos); // Inicializa os semáforos
+    
+    int tempo_simulacao = 1000; // Tempo total de simulação em segundos
+    simularCarros(carros, semaforos, tempo_simulacao); // Inicia a simulação
 
-    printf("\n"); // Linha em branco após a matriz
+    return 0; // Termina a execução do programa com sucesso
+
+
+// Mensagens de erro caso os vértices sejam inválidos
+erro1:
+    printf("Vertice invalido: x = %d\ty = %d\tSemaforo Inexistente 1", EntradaIncidentes_1_x, EntradaIncidentes_1_y);
+    return 1;
+
+erro2:
+    printf("Vertice invalido: x = %d\ty = %d\tSemaforo Inexistente2", EntradaIncidentes_2_x, EntradaIncidentes_2_y);
+    return 2;
+
+erro3:
+    printf("Vertices invalidos: x1 = %d\ty1 = %d\t && x2 = %d\ty2 = %d\t Area Invalida", EntradaIncidentes_1_x, EntradaIncidentes_1_y, EntradaIncidentes_2_x, EntradaIncidentes_2_y);
+    return 3;
 }
-#endif

@@ -3,7 +3,7 @@
 
 #include "Structs.h"
 #include "Matriz.h"
-#define QTD_CARROS 100           // Define a quantidade de carros
+#define QTD_CARROS 99           // Define a quantidade de carros
 
 // Função para verificar se uma posição específica (x, y) está ocupada por um carro
 bool posicaoOcupada(int x, int y, Carro *carros)
@@ -19,37 +19,6 @@ bool posicaoOcupada(int x, int y, Carro *carros)
             return true;
     }
 
-    return false;
-}
-
-// Tenta desviar um carro para uma nova posição se a posição atual estiver ocupada (FUNÇÃO NAO TESTADA)
-// Parâmetros:
-// - carro: ponteiro para o carro que tentará desviar
-// - carros: array de carros
-// Retorno:
-// - true se o carro conseguir desviar, false caso contrário
-bool desviar(Carro *carro, Carro *carros)
-{
-    int possiveis_desvios[4][2] = {
-        {carro->x + 1, carro->y},
-        {carro->x - 1, carro->y},
-        {carro->x, carro->y + 1},
-        {carro->x, carro->y - 1}
-    };
-
-    for (int i = 0; i < 4; i++)
-    {
-        int novo_x = possiveis_desvios[i][0];
-        int novo_y = possiveis_desvios[i][1];
-
-        if (novo_x >= 0 && novo_x < TAMANHO_CIDADE_LINHA && novo_y >= 0 && novo_y < TAMANHO_CIDADE_COLUNA &&
-        !posicaoOcupada(novo_x, novo_y, carros))
-        {
-            carro->x = novo_x;
-            carro->y = novo_y;
-            return true;
-        }
-    }
     return false;
 }
 

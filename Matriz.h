@@ -5,7 +5,7 @@
 #define TAMANHO_CIDADE_LINHA 28  // Define o número de linhas da matriz que representa a cidade
 #define TAMANHO_CIDADE_COLUNA 37 // Define o número de colunas da matriz que representa a cidade
 #define QTD_ESTRADAS 17          // Define a quantidade de estradas na cidade
-#define QTD_CARROS 10            // Define a quantidade de carros
+#define QTD_CARROS 99            // Define a quantidade de carros
 #define QTD_SEMAFOROS 96         // Define a quantidade de semáforos
 
 #include "Structs.h" // Inclui a definição de estruturas necessárias
@@ -121,7 +121,7 @@ void inicializarMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA])
 void atualizarMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], Carro *carros, Semaforo *semaforos)
 {
     if(ativarfluxo){
-        printf("fluco do semaforos linha %d coluna %d:\t %d\n\n",semaforo_x, semaforo_y, fluxo(matriz));
+        printf("fluxo do semaforos linha %d coluna %d:\t %d\n\n",semaforo_x, semaforo_y, fluxo(matriz));
     }
     
     // Limpa a matriz das posições anteriores, mantendo apenas as ruas
