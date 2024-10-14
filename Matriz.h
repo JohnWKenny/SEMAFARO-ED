@@ -5,7 +5,7 @@
 #define TAMANHO_CIDADE_LINHA 28  // Define o número de linhas da matriz que representa a cidade
 #define TAMANHO_CIDADE_COLUNA 37 // Define o número de colunas da matriz que representa a cidade
 #define QTD_ESTRADAS 17          // Define a quantidade de estradas na cidade
-#define QTD_CARROS 1             // Define a quantidade de carros
+#define QTD_CARROS 10            // Define a quantidade de carros
 #define QTD_SEMAFOROS 96         // Define a quantidade de semáforos
 
 #include "Structs.h" // Inclui a definição de estruturas necessárias
@@ -13,8 +13,49 @@
 // Declaração de variáveis externas para coordenadas de incidentes
 extern int EntradaIncidentes_1_x, EntradaIncidentes_1_y;
 extern int EntradaIncidentes_2_x, EntradaIncidentes_2_y;
+extern int ativarfluxo, semaforo_x, semaforo_y, direcao;
+
 
 /*{ FUNÇÕES }*/
+
+int fluxo(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA]) {
+    int resultadofluxo = 0; // Inicializar o resultadofluxo
+    switch (direcao) {
+        case 1:
+            if (semaforo_x > 0) {
+                for (int i = 0; i < 3; i++) {
+                    if (matriz[semaforo_x - i][semaforo_y] == 'C') resultadofluxo += 1;
+                }
+            }
+            break; 
+
+        case 2:
+            if (semaforo_x < TAMANHO_CIDADE_LINHA - 1) {
+                for (int i = 0; i < 3; i++) {
+                    if (matriz[semaforo_x + i][semaforo_y] == 'C') resultadofluxo += 1;
+                }
+            }
+            break;
+            
+        case 3:
+            if (semaforo_y > 0) {
+                for (int i = 0; i < 4; i++) {
+                    if (matriz[semaforo_x][semaforo_y - i] == 'C') resultadofluxo += 1;
+                }
+            }
+            break;
+
+        case 4:
+            if (semaforo_y < TAMANHO_CIDADE_COLUNA - 1) {
+                for (int i = 0; i < 4; i++) {
+                    if (matriz[semaforo_x][semaforo_y + i] == 'C') resultadofluxo += 1;
+                }
+            }
+            break; 
+    }
+    return resultadofluxo;
+}
+
 
 // Função que inicializa a matriz da cidade, colocando pontos (.) em todas as posições e definindo as estradas com seus respectivos símbolos.
 // Parâmetros:
@@ -79,6 +120,10 @@ void inicializarMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA])
 // - semaforos: array de semáforos com suas posições e estados
 void atualizarMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], Carro *carros, Semaforo *semaforos)
 {
+    if(ativarfluxo){
+        printf("fluco do semaforos linha %d coluna %d:\t %d\n\n",semaforo_x, semaforo_y, fluxo(matriz));
+    }
+    
     // Limpa a matriz das posições anteriores, mantendo apenas as ruas
     for (int i = 0; i < TAMANHO_CIDADE_LINHA; i++)
         for (int j = 0; j < TAMANHO_CIDADE_COLUNA; j++)
