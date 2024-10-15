@@ -3,7 +3,6 @@
 
 #include "Structs.h"
 #include "Matriz.h"
-#define QTD_CARROS 99           // Define a quantidade de carros
 
 // Função para verificar se uma posição específica (x, y) está ocupada por um carro
 bool posicaoOcupada(int x, int y, Carro *carros)

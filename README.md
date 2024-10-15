@@ -93,14 +93,11 @@ Caso dúvidas pode-se fazer um teste, na função mover carro retire de todas as
 
 ### O Que Falta/Problema
 
-#### URGENTE
-- [ ] Verificar a condição de desvio. +/-
-- [ ] Modificar lógia do sinal p/ carros não virarem um só (preferencia menor linha)
-- [ ] Colocar para o semáforo descidir o próximo movimento
-- [ ] Carro na frente não sabendo direção por ter outro carro
+- [ ] Isolamento da área desativada (Os carros ainda circulam por lá)
 
-#### DEPOIS FAZ
-- [ ] Evento aleatorio.
+### ÚLTIMAS MODIFICAÇÕES
 
-#### DONE
-- [x] Logica para o sinal amarelo.
+- [x] Definição de constante necessárias apenas no arquivo "Structs.h;
+- [x] Arquivo "stackbib.h" removido, por redundância. (Seu conteúdo já está no arquivo "Structs.h");
+- [x] Biblioteca "cJSON" adicionada para auxiliar na geração do arquivo de log;
+- [x] Função de log do fluxo da cidade completo.

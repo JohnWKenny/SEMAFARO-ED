@@ -1,59 +1,100 @@
 #ifndef Matriz_h
 #define Matriz_h
 
-// Definindo constantes para a dimensão da matriz e quantidade de elementos
-#define TAMANHO_CIDADE_LINHA 28  // Define o número de linhas da matriz que representa a cidade
-#define TAMANHO_CIDADE_COLUNA 37 // Define o número de colunas da matriz que representa a cidade
-#define QTD_ESTRADAS 17          // Define a quantidade de estradas na cidade
-#define QTD_CARROS 99            // Define a quantidade de carros
-#define QTD_SEMAFOROS 96         // Define a quantidade de semáforos
-
 #include "Structs.h" // Inclui a definição de estruturas necessárias
 
+FILE *logFile; // Ponteiro para o arquivo onde os registros serão escritos
+cJSON *json; // Ponteiro para o objeto JSON
+cJSON *simulacao;
+        
 // Declaração de variáveis externas para coordenadas de incidentes
 extern int EntradaIncidentes_1_x, EntradaIncidentes_1_y;
 extern int EntradaIncidentes_2_x, EntradaIncidentes_2_y;
-extern int ativarfluxo, semaforo_x, semaforo_y, direcao;
-
+extern int ativarfluxo, exportarFluxo, semaforo_x, semaforo_y, tempo_simulacao;
+extern char face;
+extern Semaforo semaforos[QTD_SEMAFOROS];
 
 /*{ FUNÇÕES }*/
 
-int fluxo(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA]) {
+int fluxo(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], char face) {
     int resultadofluxo = 0; // Inicializar o resultadofluxo
-    switch (direcao) {
-        case 1:
-            if (semaforo_x > 0) {
-                for (int i = 0; i < 3; i++) {
-                    if (matriz[semaforo_x - i][semaforo_y] == 'C') resultadofluxo += 1;
-                }
+    switch (face) {
+        case 'v': // Vertical
+            for (int i = -2; i <= 2; i++) {
+                if (matriz[semaforo_x + i][semaforo_y] == 'C') resultadofluxo++;
             }
             break; 
-
-        case 2:
-            if (semaforo_x < TAMANHO_CIDADE_LINHA - 1) {
-                for (int i = 0; i < 3; i++) {
-                    if (matriz[semaforo_x + i][semaforo_y] == 'C') resultadofluxo += 1;
-                }
-            }
-            break;
             
-        case 3:
-            if (semaforo_y > 0) {
-                for (int i = 0; i < 4; i++) {
-                    if (matriz[semaforo_x][semaforo_y - i] == 'C') resultadofluxo += 1;
-                }
-            }
-            break;
-
-        case 4:
-            if (semaforo_y < TAMANHO_CIDADE_COLUNA - 1) {
-                for (int i = 0; i < 4; i++) {
-                    if (matriz[semaforo_x][semaforo_y + i] == 'C') resultadofluxo += 1;
-                }
+        case 'h': // Horizontal
+            for (int i = -3; i <= 3; i++) {
+                if (matriz[semaforo_x][semaforo_y + i] == 'C') resultadofluxo++;
             }
             break; 
+        
+        case 't': // Tudo
+            bool zero = false;
+            for (int i = -2; i <= 2; i++) {
+                if (i == 0 && matriz[semaforo_x + i][semaforo_y] == 'C') zero = true;
+                if (matriz[semaforo_x + i][semaforo_y] == 'C') resultadofluxo++;
+            }
+            for (int i = -3; i <= 3; i++)
+            {
+                if (i == 0 && zero) continue;
+                if (matriz[semaforo_x][semaforo_y + i] == 'C') resultadofluxo++;
+            }
+            break;
     }
+
     return resultadofluxo;
+}
+
+void gerarLog(char comand, char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], int tempo) 
+{
+    if (comand == 's')
+    {
+        json = cJSON_CreateObject();
+        cJSON_AddStringToObject(json, "Projeto", "Sistema de controle de tráfego de uma cidade com evento indesejado");
+        cJSON *developers = cJSON_CreateArray();
+        cJSON_AddItemToArray(developers, cJSON_CreateString("Davi William de Almeida Santos"));
+        cJSON_AddItemToArray(developers, cJSON_CreateString("John Wallex Kennedy Moreira Silva"));
+        cJSON_AddItemToArray(developers, cJSON_CreateString("João Gabriel Seixas Santos"));
+        cJSON_AddItemToArray(developers, cJSON_CreateString("José Cícero de Oliveira Rodrigues"));
+        cJSON_AddItemToObject(json, "Desenvolvedores", developers);
+        cJSON_AddNumberToObject(json, "Versão", 1);
+        simulacao = cJSON_CreateArray();
+    }
+    else if (comand == 'c')
+    {
+        cJSON *objeto = cJSON_CreateObject();
+        cJSON_AddNumberToObject(objeto, "tempo", tempo);
+        cJSON *sinais = cJSON_CreateArray();
+        
+        for (int i = 0; i < QTD_SEMAFOROS; i++)
+        {
+            cJSON *sinal = cJSON_CreateObject();
+            cJSON_AddNumberToObject(sinal, "id", i);
+            cJSON_AddNumberToObject(sinal, "x", semaforos[i].x);
+            cJSON_AddNumberToObject(sinal, "y", semaforos[i].y);
+            cJSON_AddNumberToObject(sinal, "fluxo_vertical", fluxo(matriz, 'v'));
+            cJSON_AddNumberToObject(sinal, "fluxo_horizontal", fluxo(matriz, 'h'));
+            cJSON_AddNumberToObject(sinal, "fluxo_total", fluxo(matriz, 't'));
+            cJSON_AddItemToArray(sinais, sinal);
+        }
+        
+        cJSON_AddItemToObject(objeto, "Semáforos", sinais);
+        cJSON_AddItemToArray(simulacao, objeto);
+    }
+    else if (comand == 'e')
+    {
+        cJSON_AddItemToObject(json, "Simulação", simulacao);
+        char *string;
+        string = cJSON_Print(json);
+        logFile = fopen("log.json", "w");
+        fprintf(logFile, "%s", string);
+        fclose(logFile);
+        free(string);
+        cJSON_Delete(json);
+    }
 }
 
 
@@ -119,11 +160,7 @@ void inicializarMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA])
 // - carros: array de carros contendo as suas respectivas posições
 // - semaforos: array de semáforos com suas posições e estados
 void atualizarMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], Carro *carros, Semaforo *semaforos)
-{
-    if(ativarfluxo){
-        printf("fluxo do semaforos linha %d coluna %d:\t %d\n\n",semaforo_x, semaforo_y, fluxo(matriz));
-    }
-    
+{   
     // Limpa a matriz das posições anteriores, mantendo apenas as ruas
     for (int i = 0; i < TAMANHO_CIDADE_LINHA; i++)
         for (int j = 0; j < TAMANHO_CIDADE_COLUNA; j++)
@@ -148,6 +185,10 @@ void atualizarMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], C
 // - matriz: matriz representando a cidade
 void imprimirMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], Semaforo *semaforos)
 {
+    if(ativarfluxo){
+        printf("Fluxo do semaforo linha %d coluna %d:\t %d\n\n",semaforo_x, semaforo_y, fluxo(matriz, face));
+    }
+
     for (int i = 0; i < TAMANHO_CIDADE_LINHA; i++)
     {
         for (int j = 0; j < TAMANHO_CIDADE_COLUNA; j++)

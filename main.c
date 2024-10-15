@@ -4,23 +4,24 @@
 #include <stdbool.h>  // Biblioteca para usar o tipo booleano em C
 #include <time.h>     // Biblioteca para manipulação de tempo, como gerar números aleatórios com base no tempo atual
 #include <unistd.h>   // Biblioteca para a função sleep, usada para pausas na execução do programa
+#include "cJSON.c"
 #include "Structs.h"  // Arquivo de cabeçalho para definição de structs usadas no código
-#include "Matriz.h"   // Arquivo de cabeçalho para funções relacionadas à matriz da cidade
 #include "Carros.h"   // Arquivo de cabeçalho para funções relacionadas aos carros
 #include "Semaforos.h"// Arquivo de cabeçalho para funções relacionadas aos semáforos
-
-/*{ CONSTANTES }*/
-#define TAMANHO_CIDADE_LINHA 28  // Define o número de linhas da matriz que representa a cidade
-#define TAMANHO_CIDADE_COLUNA 37 // Define o número de colunas da matriz que representa a cidade
-#define QTD_ESTRADAS 17          // Define a quantidade de estradas na cidade
-#define QTD_CARROS 30             // Define a quantidade de carros que estarão na simulação
-#define QTD_SEMAFOROS 96         // Define a quantidade de semáforos na cidade
+#include "Matriz.h"   // Arquivo de cabeçalho para funções relacionadas à matriz da cidade
 
 // Variáveis globais para as entradas dos incidentes, usadas para determinar pontos específicos na matriz
 int EntradaIncidentes_1_x, EntradaIncidentes_1_y;
 int EntradaIncidentes_2_x, EntradaIncidentes_2_y;
-int ativarfluxo, semaforo_x, semaforo_y, direcao;
+int ativarfluxo, exportarFluxo, semaforo_x, semaforo_y;
+char face;
+int tempo_simulacao;
 
+// Cria um array de carros para a simulação
+Carro carros[QTD_CARROS];
+
+// Cria um array de semáforos para a simulação
+Semaforo semaforos[QTD_SEMAFOROS];
 
 // Array de structs do tipo Estrada, que contém informações sobre as estradas da cidade
 Estrada estradas[QTD_ESTRADAS] = {
@@ -36,21 +37,28 @@ Estrada estradas[QTD_ESTRADAS] = {
 // - tempo_simulacao: tempo em segundos da simulação
 void simularCarros(Carro *carros, Semaforo *semaforos, int tempo_simulacao)
 {
-    while (true) // Loop infinito para simulação contínua
+    char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA]; // Cria a matriz da cidade
+    if (exportarFluxo) gerarLog('s', matriz, tempo_simulacao);
+
+    while (tempo_simulacao >= 0) // Loop até que o tempo definido acabe
     {
-        atualizarSemaforos(semaforos);                            // Atualiza os semáforos com novos estados
-        char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA]; // Cria a matriz da cidade
+        system("clear"); // Limpa a tela do terminal para mostrar a atualização da matriz
         inicializarMatriz(matriz);                               // Inicializa a matriz com pontos e vértices
-        atualizarMatriz(matriz, carros, semaforos);              // Atualiza a matriz com a posição dos carros e semáforos
-        imprimirMatriz(matriz, semaforos);                       // Imprime a matriz no terminal
-        sleep(1);                                                // Aguarda 1 segundo antes de atualizar novamente
-        
+        atualizarSemaforos(semaforos);                            // Atualiza os semáforos com novos estados
         // Move os carros, partindo do último até o primeiro para evitar problemas de sobreposição
         for (int i = QTD_CARROS; i >= 0; i--) {
             MoverCarro(&carros[i], carros, semaforos, matriz); // Função que move cada carro
         }
-        system("clear"); // Limpa a tela do terminal para mostrar a próxima atualização da matriz
+        atualizarMatriz(matriz, carros, semaforos);              // Atualiza a matriz com a posição dos carros e semáforos
+        printf("Simulacao em andamento: %10d\n\n", tempo_simulacao); // Exibe o tempo restante
+        if (exportarFluxo) gerarLog('c', matriz, tempo_simulacao);
+        imprimirMatriz(matriz, semaforos);                       // Imprime a matriz no terminal
+        
+        sleep(1);                                               // Aguarda 1 segundo antes de atualizar novamente
+        tempo_simulacao--;
     }
+
+    if (exportarFluxo) gerarLog('e', matriz, tempo_simulacao);
 }
 
 int main()
@@ -111,28 +119,29 @@ int main()
             printf("Posicao Invalida, selecione o Semaforo:(Linha e Coluna)\n");
             scanf("%d %d", &semaforo_x, &semaforo_y);  
         }
-        semaforo_y *= 3;
+        semaforo_x *= 3;
         semaforo_y *= 4;
         
-        printf("Selecione uma direcao?\n1:Cima\n2:Baixo\n3:Esquerda\n4:Direita\n");
-        scanf("%d",&direcao);
-        while(direcao < 1 && direcao > 4){
-            printf("direcao invalida\n");
-            printf("selecione uma direcao?\n1:Cima\n2:Baixo\n3:Esquerda\n4:Direita\n");
-            scanf("%d",&direcao);        
+        printf("Selecione uma face:\nv: Vertical\nh: Horizontal\n");
+        scanf(" %c",&face);
+        while(face != 'v' && face != 'h'){
+            printf("face invalida\n");
+            printf("selecione uma face:\nv: Vertical\nh: Horizontal\n");
+            scanf(" %c",&face);        
         }
     }
-    // Cria um array de carros para a simulação
-    Carro carros[QTD_CARROS] = {
-        // Inicialização dos carros (detalhes omitidos)
-    };
+
+    printf("Deseja exportar todo o fluxo? (Sim: 1 Não: 0)\t");
+    scanf("%d", &exportarFluxo);
+
     addCar(carros); // Adiciona os carros ao array
     
-    // Cria um array de semáforos para a simulação
-    Semaforo semaforos[QTD_SEMAFOROS];
     addSemaforo(semaforos); // Inicializa os semáforos
-    
-    int tempo_simulacao = 1000; // Tempo total de simulação em segundos
+
+    // Solicita ao usuário por o tempo a simulação irá ocorrer
+    printf("Quanto tempo de simulacao deseja? ");
+    scanf("%d", &tempo_simulacao);
+
     simularCarros(carros, semaforos, tempo_simulacao); // Inicia a simulação
 
     return 0; // Termina a execução do programa com sucesso
@@ -144,7 +153,7 @@ erro1:
     return 1;
 
 erro2:
-    printf("Vertice invalido: x = %d\ty = %d\tSemaforo Inexistente2", EntradaIncidentes_2_x, EntradaIncidentes_2_y);
+    printf("Vertice invalido: x = %d\ty = %d\tSemaforo Inexistente 2", EntradaIncidentes_2_x, EntradaIncidentes_2_y);
     return 2;
 
 erro3:
