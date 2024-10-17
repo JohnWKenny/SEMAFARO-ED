@@ -32,6 +32,7 @@ int fluxo(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], char face) {
             break; 
         
         case 't': // Tudo
+        {
             bool zero = false;
             for (int i = -2; i <= 2; i++) {
                 if (i == 0 && matriz[semaforo_x + i][semaforo_y] == 'C') zero = true;
@@ -43,6 +44,8 @@ int fluxo(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], char face) {
                 if (matriz[semaforo_x][semaforo_y + i] == 'C') resultadofluxo++;
             }
             break;
+        }
+            
     }
 
     return resultadofluxo;
