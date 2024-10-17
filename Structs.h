@@ -5,7 +5,7 @@
 #define TAMANHO_CIDADE_LINHA 28  // Define o número de linhas da matriz que representa a cidade
 #define TAMANHO_CIDADE_COLUNA 37 // Define o número de colunas da matriz que representa a cidade
 #define QTD_ESTRADAS 17          // Define a quantidade de estradas na cidade
-#define QTD_CARROS 99             // Define a quantidade de carros que estarão na simulação
+#define QTD_CARROS 100             // Define a quantidade de carros que estarão na simulação
 #define QTD_SEMAFOROS 96         // Define a quantidade de semáforos na cidade
 #define STACK_LENGTH 80
 
@@ -29,6 +29,7 @@ typedef struct {
     int lastmove;
     int velocidade;
     bool parado;
+    bool desativado;
 } Carro;
 
 // Definição da estrutura para um semáforo.

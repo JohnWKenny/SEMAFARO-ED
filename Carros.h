@@ -264,7 +264,8 @@ void DefinirMovimentoNoSemaforo(Carro *carro, Carro *carros, Semaforo *semaforos
     }
 }
 
-void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA]) {
+void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA]) 
+{
     // Se o carro não está parado, realiza o próximo movimento
     if(carro->parado== true) carro-> parado = false;
     if (carro->parado == false) {
@@ -358,10 +359,11 @@ void addCar(Carro *carros)
 {
     for(int i = 0; i < QTD_CARROS; i++)
     {
+        
         carros[i].id = i;
+        
         int px = i / 10, py = i % 10;   
         
-
         if(px == 1){
             carros[i].x = 3;
             carros[i].lastmove = '>';
@@ -371,13 +373,14 @@ void addCar(Carro *carros)
             carros[i].lastmove = '>';
         }
         else if(px == 3){
+            carros[i].desativado = true;
             continue;
         }
         else if(px == 4){
             carros[i].x = 12;
             carros[i].lastmove = '>';
         }
-        else if(px == 0 || px == 5){
+        else if(px == 5 || px == 0){
             carros[i].x = 15;
             carros[i].lastmove = '>';
         }
@@ -395,34 +398,44 @@ void addCar(Carro *carros)
             carros[i].lastmove = '>';
         } 
         else if(px == 9){
-            if (py <=9)
-            {
-                carros[i].x = 27;
-                carros[i].lastmove = '<';
-            }
-            else{
-                continue;
-            }
+            carros[i].x = 27;
+            carros[i].lastmove = '<';
         }
         
-        if (px!= 3 && py != 9)
+        if(py == 0) py = 5;
+        if(py == 9) py = 0;
+        
+        int isDesativate = 0;
+        
+        for(int y = py * 4; y + 1 < (py + 1) * 4; y++)
         {
-            if(py == 1) carros[i].y = 6;
-            else if(py == 2) carros[i].y = 10;
-            else if(py == 3) carros[i].y = 14;
-            else if(py == 4) carros[i].y = 18;
-            else if(py == 0 || py == 5) carros[i].y = 22;
-            else if(py == 6) carros[i].y = 26;
-            else if(py == 7) carros[i].y = 30;
-            else carros[i].y = 34;
+            int isOcupped = 0;
+            isDesativate = 1;
+            
+            for(int teste = 0; teste < QTD_CARROS;teste++)
+            {
+                if(carros[i].x == carros[teste].x && carros[teste].y == y + 1)
+                {
+                    isOcupped = 1;
+                    break;
+                }    
+            }
+            
+            if(!isOcupped) 
+            {
+                isDesativate = 0;
+                carros[i].y = y + 1;
+                break;
+            }
+            
         }
-
+        if(isDesativate) carros[i].desativado = true;
+        else carros[i].desativado = false;
         
         carros[i].velocidade = 1;
         carros[i].parado = false;
         initPilha(&carros[i].movimentos);
         preencher(&carros[i].movimentos, &carros[i]);
     }
-    //printcar(carros);
 }   
 #endif
