@@ -42,19 +42,19 @@ void simularCarros(Carro *carros, Semaforo *semaforos, int tempo_simulacao)
 
     while (tempo_simulacao >= 0) // Loop até que o tempo definido acabe
     {
-        system("clear"); // Limpa a tela do terminal para mostrar a atualização da matriz
-        inicializarMatriz(matriz);                               // Inicializa a matriz com pontos e vértices
         atualizarSemaforos(semaforos);                            // Atualiza os semáforos com novos estados
+        inicializarMatriz(matriz);                               // Inicializa a matriz com pontos e vértices
         // Move os carros, partindo do último até o primeiro para evitar problemas de sobreposição
-        for (int i = QTD_CARROS; i >= 0; i--) {
-            MoverCarro(&carros[i], carros, semaforos, matriz); // Função que move cada carro
-        }
         atualizarMatriz(matriz, carros, semaforos);              // Atualiza a matriz com a posição dos carros e semáforos
         printf("Simulacao em andamento: %10d\n\n", tempo_simulacao); // Exibe o tempo restante
         if (exportarFluxo) gerarLog('c', matriz, tempo_simulacao);
         imprimirMatriz(matriz, semaforos);                       // Imprime a matriz no terminal
-        
         sleep(1);                                               // Aguarda 1 segundo antes de atualizar novamente
+        for (int i = QTD_CARROS - 1; i >= 0; i--) {
+            MoverCarro(&carros[i], carros, semaforos, matriz); // Função que move cada carro
+        }
+        system("clear");
+        
         tempo_simulacao--;
     }
 
@@ -67,6 +67,10 @@ int main()
     printf("Digite o primeiro vertice(Coluna e Linha):\n");
     scanf("%d %d", &EntradaIncidentes_1_y, &EntradaIncidentes_1_x);
     system("clear"); // Limpa a tela do terminal após a entrada
+
+    //caso especial que o nome do John não configura
+    if((EntradaIncidentes_1_y == 4 && EntradaIncidentes_1_x == 5) || (EntradaIncidentes_1_y == 5 && EntradaIncidentes_1_x == 5))
+    EntradaIncidentes_1_y = 3;
     
     // Ajusta os valores dos vértices para a escala da matriz (multiplicando por 3 e 4)
     EntradaIncidentes_1_x *= 3;

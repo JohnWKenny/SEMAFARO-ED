@@ -209,7 +209,7 @@ void imprimirMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], Se
                 printf("⚪ "); // Representa um semáforo em alerta
             }
             else if (celula == 'R') // Verifica se a célula é um semáforo vermelho
-                if (!semaforos[i].estado_verde && semaforos[i].contador < (semaforos[i].tempo_vermelho)/2)
+                if (!semaforos[i].estado_verde && semaforos[i].contador < 0)
                     printf("🟡 "); // Representa um semáforo amarelo
                 else
                     printf("🔴 "); // Representa um semáforo vermelho
