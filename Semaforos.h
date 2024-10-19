@@ -22,7 +22,7 @@ void atualizarSemaforos(Semaforo *semaforos)
             semaforos[i].contador = 0; // Reseta o contador
         }
         // Verifica se o semáforo está vermelho e se já passou o tempo vermelho especificado
-        else if (!semaforos[i].estado_verde && semaforos[i].contador >= semaforos[i].tempo_vermelho)
+        else if (!semaforos[i].estado_verde && semaforos[i].contador >= semaforos[i].tempo_vermelho + 1)
         {
             semaforos[i].estado_verde = true; // Muda para verde
             semaforos[i].contador = 0; // Reseta o contador
@@ -53,7 +53,7 @@ void addSemaforo(Semaforo semaforos[QTD_SEMAFOROS])
             semaforos[i].y = indice_y;
             semaforos[i].tempo_verde = t_verde;
             semaforos[i].tempo_vermelho = t_vermelho;
-            semaforos[i].contador = 0; // Inicia o contador em zero
+            semaforos[i].contador = -1; // Começando com -1 pq o atualizarSemaforos acontece no primeiro print da matriz, ent ela tava começando no tempo 1
             semaforos[i].estado_verde = true; // Inicia com o estado verde
             semaforos[i].alerta = false; // Inicia sem alerta
 

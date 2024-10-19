@@ -208,11 +208,16 @@ void imprimirMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], Se
             else if(celula == 'Q'){
                 printf("⚪ "); // Representa um semáforo em alerta
             }
-            else if (celula == 'R') // Verifica se a célula é um semáforo vermelho
-                if (!semaforos[i].estado_verde && semaforos[i].contador < 0)
-                    printf("🟡 "); // Representa um semáforo amarelo
-                else
-                    printf("🔴 "); // Representa um semáforo vermelho
+            else if (celula == 'R'){ // Verifica se a célula é um semáforo vermelho
+                for(int indice = 0;indice < QTD_SEMAFOROS;indice++)
+                {
+                    if(semaforos[indice].x == i && semaforos[indice].y == j)
+                        if (semaforos[indice].contador <= 1)
+                            printf("🟡 "); // Representa um semáforo amarelo
+                        else
+                            printf("🔴 "); // Representa um semáforo vermelho
+                }       
+            }         
             else
                 printf("%c ", celula); // Qualquer outra célula é impressa como está
         }
