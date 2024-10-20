@@ -7,15 +7,15 @@
 // Função para verificar se uma posição específica (x, y) está ocupada por um carro
 bool posicaoOcupada(int x, int y, Carro *carros)
 {
-    int count = 0;
-
     for (int i = 0; i < QTD_CARROS; i++)
     {
-        if (carros[i].x == x && carros[i].y == y && carros[i].parado) 
-            count++;
-
-        if (count > 1)
-            return true;
+        if (carros[i].x == x && carros[i].y == y) 
+        {
+            if(carros[i].parado)
+            {
+                return true;
+            } return false;
+        }
     }
 
     return false;
@@ -111,245 +111,152 @@ void preencher(Pilha *movimentos, Carro *carro)
 // - matriz: matriz representando a cidade
 void DefinirMovimentoNoSemaforo(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA])
 {
-        if (isEmpty(&carro->movimentos))
+        if (isEmpty(&carro->movimentos)) preencher(&carro->movimentos, carro);
+
+        int tentantivas = 0;
+        while(1)
         {
-            preencher(&carro->movimentos, carro);
-        }
-        char movimentodocarro = pop(&carro->movimentos);
-        if((carro->lastmove == 'V' || carro->lastmove == '^') && (matriz[carro->x][carro->y] == 'R' ||
-        matriz[carro->x ][carro->y]== 'v')){
-            while(1){
-                switch(movimentodocarro){
-                    case 94: //^
-                        if(posicaoOcupada(carro->x -carro->velocidade, carro->y, carros) ||
-                        matriz[carro->x-carro->velocidade][carro->y] != '^' &&
-                        matriz[carro->x-carro->velocidade][carro->y]!='|'){
-                            if (isEmpty(&carro->movimentos))
-                            {
-                            preencher(&carro->movimentos, carro);
-                            }
-                            movimentodocarro = pop(&carro->movimentos);
-                            continue;
-                        }
-                        else{
-                            carro->lastmove = '^';
-                            carro->parado = false; 
-                            return;
-                        }    
-                    case 86: //v
-                        if(posicaoOcupada(carro->x +carro->velocidade, carro->y, carros)||
-                        matriz[carro->x+carro->velocidade][carro->y] != 'V' &&
-                        matriz[carro->x+carro->velocidade][carro->y]!='|'){
-                                if (isEmpty(&carro->movimentos))
-                                {
-                                preencher(&carro->movimentos, carro);
-                                }
-                                movimentodocarro = pop(&carro->movimentos);
-                                continue;                            }
-                        else{
-                                carro->lastmove = 'V';
-                                carro->parado = false; 
-                                return;
-                        }
-                    case 62: //>
-                        if(posicaoOcupada(carro->x, carro->y + carro->velocidade, carros)||
-                        matriz[carro->x][carro->y+carro->velocidade] != '>' &&
-                        matriz[carro->x][carro->y+carro->velocidade]!='-'){
-                                    if (isEmpty(&carro->movimentos))
-                                    {
-                                    preencher(&carro->movimentos, carro);
-                                    }
-                                    movimentodocarro = pop(&carro->movimentos);
-                                    continue;
-                                }
-                        else{
-                            carro->lastmove = '>';
-                            carro->parado = false; 
-                            return;
-                        }
-                    case 60: //<
-                        if(posicaoOcupada(carro->x, carro->y-carro->velocidade, carros)||
-                        matriz[carro->x][carro->y-carro->velocidade] != '<'&& 
-                        matriz[carro->x][carro->y-carro->velocidade]!='-'){
-                            if (isEmpty(&carro->movimentos))
-                                {
-                                preencher(&carro->movimentos, carro);
-                                }
-                                movimentodocarro = pop(&carro->movimentos);
-                                continue;
-                        }
-                        else{
-                            carro->lastmove = '<';
-                            carro->parado = false; 
-                            return;
-                        }
-                }
- 
+            if(tentantivas > 1) 
+            {
+                carro->parado = true;
+                break;     
             }
-        }
-        else if((carro->lastmove == '>'|| carro->lastmove =='<') && (matriz[carro->x][carro->y]== 'G'||
-        matriz[carro->x][carro->y]== 'v')){
-            while(1){
-                    switch(movimentodocarro){
-                        case 94: //^
-                            if(posicaoOcupada(carro->x-carro->velocidade, carro->y, carros)||
-                            matriz[carro->x - carro->velocidade][carro->y] != '^'&&
-                            matriz[carro->x - carro->velocidade][carro->y]!='|'){
-                                if (isEmpty(&carro->movimentos))
-                                {
-                                    preencher(&carro->movimentos, carro);
-                                }
-                                movimentodocarro = pop(&carro->movimentos);
-                                continue;
-                            }
-                            else{
-                                carro->lastmove = '^';
-                                carro->parado = false; 
-                                return;
-                            }    
-                        case 86: //v
-                            if(posicaoOcupada(carro->x +carro->velocidade, carro->y, carros) ||
-                            matriz[carro->x +carro->velocidade][carro->y] != 'V'&&
-                            matriz[carro->x +carro->velocidade][carro->y]!='|'){
-                                if (isEmpty(&carro->movimentos))
-                                    {
-                                    preencher(&carro->movimentos, carro);
-                                    }
-                                    movimentodocarro = pop(&carro->movimentos);
-                                    continue;
-                                }
-                            else{
-                                carro->lastmove = 'V';
-                                carro->parado = false; 
-                                return;
-                            }
-                        case 62: //>
-                            if(posicaoOcupada(carro->x, carro->y +carro->velocidade, carros)||
-                            matriz[carro->x][carro->y +carro->velocidade] != '>'&&
-                            matriz[carro->x][carro->y +carro->velocidade]!='-'){
-                                        if (isEmpty(&carro->movimentos))
-                                        {
-                                        preencher(&carro->movimentos, carro);
-                                        }
-                                        movimentodocarro = pop(&carro->movimentos);
-                                        continue;
-                                    }
-                            else{
-                                carro->lastmove = '>';
-                                carro->parado = false; 
-                                return;
-                            }
-                        case 60: //<
-                            if(posicaoOcupada(carro->x, carro->y -carro->velocidade, carros)||
-                            matriz[carro->x][carro->y -carro->velocidade] != '<' &&
-                            matriz[carro->x][carro->y -carro->velocidade]!='-'){
-                                        if (isEmpty(&carro->movimentos))
-                                        {
-                                        preencher(&carro->movimentos, carro);
-                                        }
-                                        movimentodocarro = pop(&carro->movimentos);
-                                        continue;
-                                    }
-                            else{
-                                carro->lastmove = '<';
-                                carro->parado = false; 
-                                return;
-                            }
+            switch(pop(&carro->movimentos))
+            {
+                case 94: //^
+                    if (isEmpty(&carro->movimentos))
+                    {
+                        tentantivas += 1;
+                        preencher(&carro->movimentos, carro);
+                    }
+
+                    if(carro->lastmove == 'V' && matriz[carro->x+carro->velocidade][carro->y] == '|') continue;
+
+                    if(!posicaoOcupada(carro->x - carro->velocidade, carro->y, carros) && (
+                    matriz[carro->x-carro->velocidade][carro->y] == '^' ||
+                    matriz[carro->x-carro->velocidade][carro->y] =='|'))
+                    {
+                        carro->lastmove = '^';
+                        break;
+                    }
+                        
+                    continue;  
+                case 86: //v
+                    if (isEmpty(&carro->movimentos))
+                    {
+                        tentantivas += 1;
+                        preencher(&carro->movimentos, carro);
+                    }
+
+                    if(!posicaoOcupada(carro->x +carro->velocidade, carro->y, carros) && (
+                    matriz[carro->x+carro->velocidade][carro->y] == 'V' ||
+                    matriz[carro->x+carro->velocidade][carro->y] =='|'))
+                    {
+                        carro->lastmove = 'V';
+                        break;
+                    }
+                        
+                    continue;
+                case 62: //>
+                    if (isEmpty(&carro->movimentos))
+                    {
+                        tentantivas += 1;
+                        preencher(&carro->movimentos, carro);
+                    }
+
+                    if(carro->lastmove == '<' && matriz[carro->x][carro->y+carro->velocidade] == '-') continue;
+
+                    if(!posicaoOcupada(carro->x, carro->y + carro->velocidade, carros) && (
+                    matriz[carro->x][carro->y+carro->velocidade] == '>' ||
+                    matriz[carro->x][carro->y+carro->velocidade] =='-'))
+                    {
+                        carro->lastmove = '>';
+                        break;
+                    }
+                        
+                    continue;
+                case 60: //<
+                    if (isEmpty(&carro->movimentos))
+                    {
+                        tentantivas += 1;
+                        preencher(&carro->movimentos, carro);
+                    }
+
+                    if(carro->lastmove == '>' && matriz[carro->x][carro->y-carro->velocidade] == '-') continue;
+
+                    if(!posicaoOcupada(carro->x, carro->y-carro->velocidade, carros) && (
+                    matriz[carro->x][carro->y-carro->velocidade] == '<' || 
+                    matriz[carro->x][carro->y-carro->velocidade] =='-'))
+                    {
+                        carro->lastmove = '<';
+                        break;
+                    }
+                        
+                    continue;
             }
+
+            break;
         }
-    }
-    else{
-        carro->parado = true;
-        return;
-    }
 }
 
 void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA]) 
 {
-    // Se o carro não está parado, realiza o próximo movimento
-    if(carro->parado== true) carro-> parado = false;
-    if (carro->parado == false) {
-        switch (carro->lastmove) {
-            case '^': // Mover para cima
-                if (carro->x - carro->velocidade >= 0) {
-                    if (matriz[carro->x - carro->velocidade][carro->y] == 'G') {
-                        carro->parado = true;      
-                        return; // Carro encontra semáforo verde, parar
-                    } else if (matriz[carro->x - carro->velocidade][carro->y] == 'R' ||
-                    matriz[carro->x - carro->velocidade][carro->y] == 'v') {
-                        carro->x -= carro->velocidade;
-                        DefinirMovimentoNoSemaforo(carro, carros, semaforos, matriz); // Chama a função para lidar com o semáforo
-                        return; // Para no semáforo
-                    } else {
-                        if(matriz[carro->x - carro->velocidade][carro->y] != 'C'){
-                            carro->x -= carro->velocidade;
-                        }
-                    
-                        carro->parado= true;
-                        return;
-                    }
+    switch (carro->lastmove) {
+        case '^': // Mover para cima
+            if (carro->x - carro->velocidade >= 0) {
+                if(carro->parado && (!posicaoOcupada(carro->x -carro->velocidade, carro->y, carros) || matriz[carro->x - carro->velocidade][carro->y] == 'G')) carro->parado = false;
+                if((matriz[carro->x-1][carro->y] == 'R' || matriz[carro->x-2][carro->y] == 'R' || matriz[carro->x-3][carro->y] == 'R') && matriz[carro->x-carro->velocidade][carro->y] == 'C') 
+                {
+                    carro->parado = true;
+                    break;
                 }
+                if(matriz[carro->x - carro->velocidade][carro->y] == 'G' || matriz[carro->x - carro->velocidade][carro->y] == 'v')
+                {
+                    carro->x -= carro->velocidade;
+                    DefinirMovimentoNoSemaforo(carro, carros, semaforos, matriz); // Chama a função para lidar com o semáforo
+                } else if(!posicaoOcupada(carro->x -carro->velocidade, carro->y, carros )&& matriz[carro->x-carro->velocidade][carro->y] != 'R') carro->x -= carro->velocidade;
+                else carro->parado = true;
+            } else DefinirMovimentoNoSemaforo(carro, carros, semaforos, matriz);
 
-            case 'V': // Mover para baixo
-                if (carro->x + carro->velocidade < TAMANHO_CIDADE_LINHA) {
-                    if (matriz[carro->x + carro->velocidade][carro->y] == 'G') {
-                        carro->parado = true;      
-                        return; // Carro encontra semáforo verde, parar
-                    } else if (matriz[carro->x + carro->velocidade][carro->y] == 'R'||
-                    matriz[carro->x + carro->velocidade][carro->y] == 'v') {
-                        carro->x += carro->velocidade;
-                        DefinirMovimentoNoSemaforo(carro, carros, semaforos, matriz); // Chama a função para lidar com o semáforo
-                        return; // Para no semáforo
-                    } else {
-                        if(matriz[carro->x + carro->velocidade][carro->y] != 'C'){
-                            carro->x += carro->velocidade;
-                        }
-                        
-                        carro->parado=true;
-                        return;
-                    }
-                }
+            break;
 
-            case '>': // Mover para direita
-                if (carro->y + carro->velocidade < TAMANHO_CIDADE_COLUNA) {
-                    if (matriz[carro->x][carro->y + carro->velocidade] == 'R') {
-                        carro->parado = true;      
-                        return; // Carro encontra semáforo verde, parar
-                    } else if (matriz[carro->x][carro->y + carro->velocidade] == 'G'||
-                    matriz[carro->x][carro->y+ carro->velocidade] == 'v') {
-                        carro->y += carro->velocidade;
-                        DefinirMovimentoNoSemaforo(carro, carros, semaforos, matriz); // Chama a função para lidar com o semáforo
-                        return; // Para no semáforo
-                    } else {
-                        if(matriz[carro->x][carro->y + carro->velocidade] != 'C'){
-                            carro->y += carro->velocidade;
-                        }
-                        
-                        carro->parado = true;
-                        return;
-                    }
-                }
+        case 'V': // Mover para baixo
+            if (carro->x + carro->velocidade < TAMANHO_CIDADE_LINHA) {
+                if(carro->parado && (!posicaoOcupada(carro->x +carro->velocidade, carro->y, carros) || matriz[carro->x + carro->velocidade][carro->y] == 'G')) carro->parado = false;
+                if(matriz[carro->x + carro->velocidade][carro->y] == 'G' || matriz[carro->x + carro->velocidade][carro->y] == 'v')
+                {
+                    carro->x += carro->velocidade;
+                    DefinirMovimentoNoSemaforo(carro, carros, semaforos, matriz); // Chama a função para lidar com o semáforo
+                } else if(!posicaoOcupada(carro->x +carro->velocidade, carro->y, carros)&& matriz[carro->x+carro->velocidade][carro->y] != 'R') carro->x += carro->velocidade;
+                else carro->parado = true;
+            } else DefinirMovimentoNoSemaforo(carro, carros, semaforos, matriz);
+            break;
 
-            case '<': // Mover para esquerda
-                if (carro->y - carro->velocidade >= 0) {
-                    if (matriz[carro->x][carro->y - carro->velocidade] == 'R'/*lembra do carro*/) {
-                        carro->parado = true;      
-                        return; // Carro encontra semáforo verde, parar
-                    } else if (matriz[carro->x][carro->y - carro->velocidade] == 'G'||
-                    matriz[carro->x][carro->y - carro->velocidade] == 'v') {
-                        carro->y -= carro->velocidade;
-                        DefinirMovimentoNoSemaforo(carro, carros, semaforos, matriz); // Chama a função para lidar com o semáforo
-                        return; // Para no semáforo
-                    } else {
-                        if(matriz[carro->x][carro->y - carro->velocidade] != 'C'){
-                            carro->y -= carro->velocidade;
-                        }
-                        
-                        carro->parado = true;
-                        return;
-                    }
-                }
-        }
+        case '>': // Mover para direita
+            if (carro->y + carro->velocidade < TAMANHO_CIDADE_COLUNA) {
+                if(carro->parado && (!posicaoOcupada(carro->x, carro->y +carro->velocidade, carros) || matriz[carro->x][carro->y +carro->velocidade] == 'G')) carro->parado = false;
+
+                if(matriz[carro->x][carro->y + carro->velocidade] == 'G' || matriz[carro->x][carro->y + carro->velocidade] == 'v')
+                {
+                    carro->y += carro->velocidade;
+                    DefinirMovimentoNoSemaforo(carro, carros, semaforos, matriz); // Chama a função para lidar com o semáforo
+                } else if(!posicaoOcupada(carro->x, carro->y + carro->velocidade, carros) && matriz[carro->x][carro->y +carro->velocidade] != 'R') carro->y += carro->velocidade;
+                else carro->parado = true;
+            } else DefinirMovimentoNoSemaforo(carro, carros, semaforos, matriz);
+            break;
+            
+        case '<': // Mover para esquerda
+            if (carro->y - carro->velocidade >= 0) {
+                if(carro->parado && (!posicaoOcupada(carro->x, carro->y-carro->velocidade, carros) || matriz[carro->x][carro->y-carro->velocidade] == 'G')) carro->parado = false;
+                if(matriz[carro->x][carro->y - carro->velocidade] == 'G' || matriz[carro->x][carro->y - carro->velocidade] == 'v')
+                {
+                    carro->y -= carro->velocidade;
+                    DefinirMovimentoNoSemaforo(carro, carros, semaforos, matriz); // Chama a função para lidar com o semáforo
+                } else if(!posicaoOcupada(carro->x, carro->y - carro->velocidade, carros)&& matriz[carro->x][carro->y -carro->velocidade] != 'R') carro->y -= carro->velocidade;
+                else carro->parado = true;
+            } else DefinirMovimentoNoSemaforo(carro, carros, semaforos, matriz);
+
+            break;
     }
    
 }
@@ -359,7 +266,6 @@ void addCar(Carro *carros)
 {
     for(int i = 0; i < QTD_CARROS; i++)
     {
-        
         carros[i].id = i;
         
         int px = i / 10, py = i % 10;   
@@ -395,7 +301,7 @@ void addCar(Carro *carros)
         else if(px == 8)
         {
             carros[i].x = 24;
-            carros[i].lastmove = '>';
+            carros[i].lastmove = '<';
         } 
         else if(px == 9){
             carros[i].x = 27;
@@ -412,9 +318,9 @@ void addCar(Carro *carros)
             int isOcupped = 0;
             isDesativate = 1;
             
-            for(int teste = 0; teste < QTD_CARROS;teste++)
+            for(int indice = 0; indice < QTD_CARROS;indice++)
             {
-                if(carros[i].x == carros[teste].x && carros[teste].y == y + 1)
+                if(carros[i].x == carros[indice].x && carros[indice].y == y + 1)
                 {
                     isOcupped = 1;
                     break;
