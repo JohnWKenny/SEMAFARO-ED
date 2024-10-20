@@ -42,6 +42,7 @@ void simularCarros(Carro *carros, Semaforo *semaforos, int tempo_simulacao)
 
     while (tempo_simulacao >= 0) // Loop até que o tempo definido acabe
     {
+        system("clear");
         atualizarSemaforos(semaforos);                            // Atualiza os semáforos com novos estados
         inicializarMatriz(matriz);                               // Inicializa a matriz com pontos e vértices
         // Move os carros, partindo do último até o primeiro para evitar problemas de sobreposição
@@ -53,7 +54,6 @@ void simularCarros(Carro *carros, Semaforo *semaforos, int tempo_simulacao)
         for (int i = QTD_CARROS - 1; i >= 0; i--) {
             MoverCarro(&carros[i], carros, semaforos, matriz); // Função que move cada carro
         }
-        system("clear");
         
         tempo_simulacao--;
     }
