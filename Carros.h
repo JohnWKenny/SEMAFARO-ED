@@ -343,5 +343,22 @@ void addCar(Carro *carros)
         initPilha(&carros[i].movimentos);
         preencher(&carros[i].movimentos, &carros[i]);
     }
-}   
+}  
+
+int totalCars(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA])
+{
+    int total = 0;
+
+    for (int i = 0; i < TAMANHO_CIDADE_LINHA; i++)
+    {
+        for (int j = 0; j < TAMANHO_CIDADE_COLUNA; j++)
+        {
+            if (matriz[i][j] == 'C') total++;
+        }
+        
+    }
+
+    return total;
+}
+
 #endif

@@ -16,18 +16,18 @@ extern Semaforo semaforos[QTD_SEMAFOROS];
 
 /*{ FUNÇÕES }*/
 
-int fluxo(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], char face) {
+int fluxo(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], int x, int y, char face) {
     int resultadofluxo = 0; // Inicializar o resultadofluxo
     switch (face) {
         case 'v': // Vertical
             for (int i = -2; i <= 2; i++) {
-                if (matriz[semaforo_x + i][semaforo_y] == 'C') resultadofluxo++;
+                if (matriz[x + i][y] == 'C') resultadofluxo++;
             }
             break; 
             
         case 'h': // Horizontal
             for (int i = -3; i <= 3; i++) {
-                if (matriz[semaforo_x][semaforo_y + i] == 'C') resultadofluxo++;
+                if (matriz[x][y + i] == 'C') resultadofluxo++;
             }
             break; 
         
@@ -35,13 +35,13 @@ int fluxo(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], char face) {
         {
             bool zero = false;
             for (int i = -2; i <= 2; i++) {
-                if (i == 0 && matriz[semaforo_x + i][semaforo_y] == 'C') zero = true;
-                if (matriz[semaforo_x + i][semaforo_y] == 'C') resultadofluxo++;
+                if (i == 0 && matriz[x + i][y] == 'C') zero = true;
+                if (matriz[x + i][y] == 'C') resultadofluxo++;
             }
             for (int i = -3; i <= 3; i++)
             {
                 if (i == 0 && zero) continue;
-                if (matriz[semaforo_x][semaforo_y + i] == 'C') resultadofluxo++;
+                if (matriz[x][y + i] == 'C') resultadofluxo++;
             }
             break;
         }
@@ -78,9 +78,9 @@ void gerarLog(char comand, char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLU
             cJSON_AddNumberToObject(sinal, "id", i);
             cJSON_AddNumberToObject(sinal, "x", semaforos[i].x);
             cJSON_AddNumberToObject(sinal, "y", semaforos[i].y);
-            cJSON_AddNumberToObject(sinal, "fluxo_vertical", fluxo(matriz, 'v'));
-            cJSON_AddNumberToObject(sinal, "fluxo_horizontal", fluxo(matriz, 'h'));
-            cJSON_AddNumberToObject(sinal, "fluxo_total", fluxo(matriz, 't'));
+            cJSON_AddNumberToObject(sinal, "fluxo_vertical", fluxo(matriz, semaforos[i].x, semaforos[i].y, 'v'));
+            cJSON_AddNumberToObject(sinal, "fluxo_horizontal", fluxo(matriz, semaforos[i].x, semaforos[i].y, 'h'));
+            cJSON_AddNumberToObject(sinal, "fluxo_total", fluxo(matriz, semaforos[i].x, semaforos[i].y, 't'));
             cJSON_AddItemToArray(sinais, sinal);
         }
         
@@ -189,7 +189,7 @@ void atualizarMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], C
 void imprimirMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], Semaforo *semaforos)
 {
     if(ativarfluxo){
-        printf("Fluxo do semaforo linha %d coluna %d:\t %d\n\n",semaforo_x, semaforo_y, fluxo(matriz, face));
+        printf("Fluxo %s do semaforo linha %d coluna %d:\t %d\n\n", (face=='v') ? "vertical" : "horizontal", semaforo_x, semaforo_y, fluxo(matriz, semaforo_x, semaforo_y,face));
     }
 
     for (int i = 0; i < TAMANHO_CIDADE_LINHA; i++)
