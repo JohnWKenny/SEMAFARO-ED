@@ -68,10 +68,6 @@ int main()
     printf("Digite o primeiro vertice(Coluna e Linha):\n");
     scanf("%d %d", &EntradaIncidentes_1_y, &EntradaIncidentes_1_x);
     system("clear"); // Limpa a tela do terminal após a entrada
-
-    //caso especial que o nome do John não configura
-    if((EntradaIncidentes_1_y == 4 && EntradaIncidentes_1_x == 5) || (EntradaIncidentes_1_y == 5 && EntradaIncidentes_1_x == 5))
-    EntradaIncidentes_1_y = 3;
     
     // Ajusta os valores dos vértices para a escala da matriz (multiplicando por 3 e 4)
     EntradaIncidentes_1_x *= 3;
@@ -87,6 +83,21 @@ int main()
     printf("Digite o segundo vertice:(Coluna e Linha)\n");
     scanf("%d %d", &EntradaIncidentes_2_y, &EntradaIncidentes_2_x);
     system("clear"); // Limpa a tela do terminal após a entrada
+    
+
+    //Ruas que dão problemas
+    // Problema do inicio
+    if(EntradaIncidentes_1_y == 0 && (EntradaIncidentes_1_x / 3>= 5||EntradaIncidentes_2_x >= 5)) EntradaIncidentes_2_x = 9;
+    
+    //Problema do meio
+    if(EntradaIncidentes_1_y /4==4 || EntradaIncidentes_1_y/4 ==5 && EntradaIncidentes_1_x/3 <=5) EntradaIncidentes_1_y = 3 * 4;
+    if((EntradaIncidentes_2_x >= 6) && (EntradaIncidentes_2_y == 2|| EntradaIncidentes_2_y ==3))
+    EntradaIncidentes_2_y = 4;
+    
+    //Problema do fim
+    if((EntradaIncidentes_1_y/4 == 9 || EntradaIncidentes_2_y ==9) && (EntradaIncidentes_2_x <=6 || EntradaIncidentes_1_x / 3<=6)){
+        EntradaIncidentes_1_x = 0;
+    }
     
     // Ajusta os valores dos vértices para a escala da matriz (multiplicando por 3 e 4)
     EntradaIncidentes_2_x *= 3;

@@ -128,27 +128,33 @@ void inicializarMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA])
         }
     }
 
-    // Marca as posições de incidentes com o símbolo 'A'
+        // Marca as posições de incidentes com o símbolo 'A'
     for(int x = EntradaIncidentes_1_x; x <= EntradaIncidentes_2_x; x += 3){
         for(int y = EntradaIncidentes_1_y; y <= EntradaIncidentes_2_y; y += 4){
-            if(x == EntradaIncidentes_1_x){
-                if(x-2 >= 0)
-                    matriz[x - 2][y] = 'A'; // Marca posição acima do primeiro ponto de incidente
+            for(int i = 0; i<= 2; i++){
+                if(x == EntradaIncidentes_1_x){
+                    if(x - i >= 0)
+                        matriz[x - i][y] = 'A'; // Marca posição acima do primeiro ponto de incidente
+                }
+                if(x == EntradaIncidentes_2_x){
+                    if(x + i <= TAMANHO_CIDADE_LINHA)
+                        matriz[x + i][y] = 'A'; // Marca posição abaixo do segundo ponto de incidente
+                }
             }
-            if(x == EntradaIncidentes_2_x){
-                if(x + 2 <= TAMANHO_CIDADE_LINHA)
-                    matriz[x + 2][y] = 'A'; // Marca posição abaixo do segundo ponto de incidente
-            }
-            if(y == EntradaIncidentes_1_y){
-                if(y - 3 >= 0)
-                    matriz[x][y - 3] = 'A'; // Marca posição à esquerda do primeiro ponto de incidente
-            }
-            if(y == EntradaIncidentes_2_y){
-                if(y + 3 <= TAMANHO_CIDADE_COLUNA)
-                    matriz[x][y + 3] = 'A'; // Marca posição à direita do segundo ponto de incidente
+            for(int i = 0; i <=3 ; i++){
+                if(y == EntradaIncidentes_1_y){
+                    if(y - i >= 0)
+                        matriz[x][y - i] = 'A'; // Marca posição à esquerda do primeiro ponto de incidente
+                }
+                if(y == EntradaIncidentes_2_y){
+                
+                    if(y + i <= TAMANHO_CIDADE_COLUNA)
+                        matriz[x][y + i] = 'A'; // Marca posição à direita do segundo ponto de incidente
+                }
             }
         }
     }
+
 
     // Marca os vértices (pontos de conexão das estradas) nas extremidades da matriz
     matriz[0][0] = 'v';
