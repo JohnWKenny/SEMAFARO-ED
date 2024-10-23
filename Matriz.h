@@ -185,7 +185,7 @@ void atualizarMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], C
     }
 
     // Atualiza as posições dos carros na matriz
-    for (int i = 0; i < QTD_CARROS; i++)
+    for (int i = 8; i < QTD_CARROS; i++)
         if(!carros[i].desativado) matriz[carros[i].x][carros[i].y] = 'C'; // 'C' representa um carro
 }
 
@@ -206,7 +206,7 @@ void imprimirMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], Se
             if (celula == 'C')
                 printf("🚗 "); // Representa um carro
             else if (celula == 'v')
-                printf("● "); // Representa um vértice
+                printf(" ● "); // Representa um vértice
             else if (celula == 'A')
                 printf("🚧 "); // Representa um incidente
             else if (celula == 'G')
@@ -214,6 +214,31 @@ void imprimirMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], Se
             else if(celula == 'Q'){
                 printf("⚪ "); // Representa um semáforo em alerta
             }
+            else if(celula == '>')
+            {
+                printf(" → ");
+            }
+            else if(celula == '<')
+            {
+                printf(" ← ");
+            }
+            else if(celula == '^')
+            {
+                printf(" ↑ ");
+            }
+            else if(celula == 'V')
+            {
+                printf(" ↓ ");
+            }
+            else if(celula == '-')
+            {
+                printf(" ⇄ ");
+            }
+            else if(celula == '|')
+            {
+                printf(" ⇅ ");
+            }
+
             else if (celula == 'R'){ // Verifica se a célula é um semáforo vermelho
                 for(int indice = 0;indice < QTD_SEMAFOROS;indice++)
                 {
@@ -225,7 +250,7 @@ void imprimirMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], Se
                 }       
             }         
             else
-                printf("%c ", celula); // Qualquer outra célula é impressa como está
+                printf(" %c ", celula); // Qualquer outra célula é impressa como está
         }
 
         printf("\n"); // Nova linha após imprimir uma linha da matriz

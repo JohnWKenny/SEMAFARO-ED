@@ -39,12 +39,14 @@ void simularCarros(Carro *carros, Semaforo *semaforos, int tempo_simulacao)
 {
     char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA]; // Cria a matriz da cidade
     if (exportarFluxo) gerarLog('s', matriz, tempo_simulacao);
+    int start = tempo_simulacao;
 
     while (tempo_simulacao >= 0) // Loop até que o tempo definido acabe
     {
         system("clear");
         atualizarSemaforos(semaforos);                            // Atualiza os semáforos com novos estados
         inicializarMatriz(matriz);                               // Inicializa a matriz com pontos e vértices
+        if (start == tempo_simulacao) addCar(carros, matriz); // Adiciona os carros ao array
         // Move os carros, partindo do último até o primeiro para evitar problemas de sobreposição
         atualizarMatriz(matriz, carros, semaforos);              // Atualiza a matriz com a posição dos carros e semáforos
         printf("Simulacao em andamento: %10d\n\n", tempo_simulacao); // Exibe o tempo restante
@@ -149,8 +151,6 @@ int main()
 
     printf("Deseja exportar todo o fluxo? (Sim: 1 Não: 0)\t");
     scanf("%d", &exportarFluxo);
-
-    addCar(carros); // Adiciona os carros ao array
     
     addSemaforo(semaforos); // Inicializa os semáforos
 

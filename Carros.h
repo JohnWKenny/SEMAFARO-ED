@@ -103,6 +103,8 @@ void preencher(Pilha *movimentos, Carro *carro)
     }
 }
 
+
+
 // Move um carro de acordo com sua velocidade e o estado dos semáforos
 // Parâmetros:
 // - carro: ponteiro para o carro que tentará desviar
@@ -262,7 +264,7 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
 }
 
 
-void addCar(Carro *carros)
+void addCar(Carro *carros, char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA])
 {
     for(int i = 0; i < QTD_CARROS; i++)
     {
@@ -335,6 +337,9 @@ void addCar(Carro *carros)
             }
             
         }
+
+        if(matriz[carros[i].x][carros[i].y] == 'A') isDesativate = true;
+
         if(isDesativate) carros[i].desativado = true;
         else carros[i].desativado = false;
         
