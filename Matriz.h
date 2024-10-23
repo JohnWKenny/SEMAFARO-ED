@@ -110,7 +110,7 @@ void inicializarMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA])
     for (int i = 0; i < TAMANHO_CIDADE_LINHA; i++)
         for (int j = 0; j < TAMANHO_CIDADE_COLUNA; j++)
             matriz[i][j] = '.'; // Todas as posições são inicialmente vazias
-
+ 
     // Desenho das estradas na matriz, com símbolos diferentes dependendo da direção e sentido
     for (int i = 0; i < QTD_ESTRADAS; i++) 
     {
@@ -127,33 +127,32 @@ void inicializarMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA])
                 matriz[j][estradas[i].ini] = estradas[i].ehDupla ? '|' : (estradas[i].sentido ? 'V' : '^');
         }
     }
-
+ 
         // Marca as posições de incidentes com o símbolo 'A'
-    for(int x = EntradaIncidentes_1_x; x <= EntradaIncidentes_2_x; x += 3){
-        for(int y = EntradaIncidentes_1_y; y <= EntradaIncidentes_2_y; y += 4){
-            for(int i = 0; i<= 2; i++){
-                if(x == EntradaIncidentes_1_x){
-                    if(x - i >= 0)
-                        matriz[x - i][y] = 'A'; // Marca posição acima do primeiro ponto de incidente
+    for (int i = 0; i < QTD_SEMAFOROS; i++){
+        matriz[semaforos[i].x][semaforos[i].y] = semaforos[i].estado_verde ? 'G' : 'R'; // 'G' para verde e 'R' para vermelho
+        if(semaforos[i].alerta) {
+        matriz[semaforos[i].x][semaforos[i].y] = 'Q'; // 'Q' para semáforo com alerta
+        for(int x = EntradaIncidentes_1_x; x <= EntradaIncidentes_2_x; x += 3){
+            for(int y = EntradaIncidentes_1_y; y <= EntradaIncidentes_2_y; y += 4){
+                for(int i = 0; i<= 2; i++){
+                        if(x - i >= 0)
+                            matriz[x - i][y] = 'A'; // Marca posição acima do primeiro ponto de incidente
+ 
+                        if(x + i <= TAMANHO_CIDADE_LINHA)
+                            matriz[x + i][y] = 'A'; // Marca posição abaixo do segundo ponto de incidente
                 }
-                if(x == EntradaIncidentes_2_x){
-                    if(x + i <= TAMANHO_CIDADE_LINHA)
-                        matriz[x + i][y] = 'A'; // Marca posição abaixo do segundo ponto de incidente
-                }
-            }
-            for(int i = 0; i <=3 ; i++){
-                if(y == EntradaIncidentes_1_y){
-                    if(y - i >= 0)
-                        matriz[x][y - i] = 'A'; // Marca posição à esquerda do primeiro ponto de incidente
-                }
-                if(y == EntradaIncidentes_2_y){
-                
-                    if(y + i <= TAMANHO_CIDADE_COLUNA)
-                        matriz[x][y + i] = 'A'; // Marca posição à direita do segundo ponto de incidente
+                for(int i = 0; i <=3 ; i++){
+                        if(y - i >= 0)
+                            matriz[x][y - i] = 'A'; // Marca posição à esquerda do primeiro ponto de incidente
+                    
+                        if(y + i <= TAMANHO_CIDADE_COLUNA)
+                            matriz[x][y + i] = 'A'; // Marca posição à direita do segundo ponto de incidente
                 }
             }
-        }
+        }      
     }
+}
 
 
     // Marca os vértices (pontos de conexão das estradas) nas extremidades da matriz
