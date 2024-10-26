@@ -184,7 +184,7 @@ void atualizarMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], C
     }
 
     // Atualiza as posições dos carros na matriz
-    for (int i = 8; i < QTD_CARROS; i++)
+    for (int i = 0; i < QTD_CARROS; i++)
         if(!carros[i].desativado) matriz[carros[i].x][carros[i].y] = 'C'; // 'C' representa um carro
 }
 
