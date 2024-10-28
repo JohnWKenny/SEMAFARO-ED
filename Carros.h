@@ -222,8 +222,7 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
         aux = carro->velocidade;
         for(int i = 1; i <= aux; i++){
             if((matriz[carro->x - i][carro->y] != '^' && matriz[carro->x - i][carro->y] != '|')){
-                i = 1;
-                aux--;
+                aux = 1;
             }
         }
         if(aux == 0) aux = 1;
@@ -243,7 +242,7 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
                     }
                 }
  
-                if (!semaforo.estado_verde && semaforo.contador >= 1)
+                if (!semaforo.estado_verde && semaforo.contador >= aux)
                 {
                     carro->parado = false;
                     carro->x -= aux;
@@ -271,8 +270,7 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
         aux = carro->velocidade;
             for(int i = 1; i <= aux; i++){
             if((matriz[carro->x + i][carro->y] != '|' && matriz[carro->x + i][carro->y] != 'V')){
-                i = 1;
-                aux--;
+               aux = 1;
             }
         }
         if(aux == 0) aux = 1;
@@ -319,8 +317,7 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
         aux = carro->velocidade;
         for(int i = 1; i <= aux; i++){
             if((matriz[carro->x][carro->y + i] != '>' && matriz[carro->x][carro->y + i] != '-')){
-                i = 1;
-                aux--;
+                aux = 1;
             }
         }
         if(aux == 0) aux = 1;
@@ -368,7 +365,7 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
             for(int i = 1; i <= aux; i++){
             if((matriz[carro->x][carro->y - i] != '<' && matriz[carro->x][carro->y - i] !='-')){
                 i = 1;
-                aux--;
+                aux = 1;
             }
         }
         if(aux == 0) aux = 1;

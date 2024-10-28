@@ -205,14 +205,16 @@ void imprimirMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], Ca
             if (celula == 'C'){
                 for(int indice = 0;indice < QTD_CARROS;indice++)
                 {
-                    if(carros[indice].x == i && carros[indice].y == j)
+                    if(carros[indice].x == i && carros[indice].y == j) {
                         if (carros[indice].velocidade == 1)
-                            printf("🚌");
+                            printf("🚌 ");
                         else if (carros[indice].velocidade == 2)
-                            printf("🚗");
+                            printf("🚗 ");
                         else
-                            printf("🚑");y
-                }       
+                            printf("🚑 ");
+                        break;  // Interrompe o loop ao encontrar um carro na posição
+                    }
+                }
             }
             else if (celula == 'v')
                 printf(" ● "); // Representa um vértice
@@ -251,13 +253,15 @@ void imprimirMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], Ca
             else if (celula == 'R'){ // Verifica se a célula é um semáforo vermelho
                 for(int indice = 0;indice < QTD_SEMAFOROS;indice++)
                 {
-                    if(semaforos[indice].x == i && semaforos[indice].y == j)
+                   if(semaforos[indice].x == i && semaforos[indice].y == j) {
                         if (semaforos[indice].contador < 1)
-                            printf("🟡 "); // Representa um semáforo amarelo
+                            printf("🟡 ");
                         else
-                            printf("🔴 "); // Representa um semáforo vermelho
-                }       
-            }         
+                            printf("🔴 ");
+                        break;  // Interrompe o loop ao encontrar um semáforo na posição
+                    }
+                }         
+            }
             else
                 printf(" %c ", celula); // Qualquer outra célula é impressa como está
         }
