@@ -51,7 +51,7 @@ void simularCarros(Carro *carros, Semaforo *semaforos, int tempo_simulacao)
         atualizarMatriz(matriz, carros, semaforos);              // Atualiza a matriz com a posição dos carros e semáforos
         printf("Simulacao em andamento: %10d\n\n", tempo_simulacao); // Exibe o tempo restante
         if (exportarFluxo) gerarLog('c', matriz, tempo_simulacao);
-        imprimirMatriz(matriz, semaforos);                       // Imprime a matriz no terminal
+        imprimirMatriz(matriz, carros, semaforos);                       // Imprime a matriz no terminal
         printf("\nCarros exibidos: %d\n", totalCars(matriz));
         sleep(1);                                               // Aguarda 1 segundo antes de atualizar novamente
         for (int i = QTD_CARROS - 1; i >= 0; i--) {

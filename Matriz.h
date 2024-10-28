@@ -191,7 +191,7 @@ void atualizarMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], C
 // Imprime a matriz da cidade no terminal com carros, semáforos e ruas
 // Parâmetros:
 // - matriz: matriz representando a cidade
-void imprimirMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], Semaforo *semaforos)
+void imprimirMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], Carro *carros, Semaforo *semaforos)
 {
     if(ativarfluxo){
         printf("Fluxo %s do semaforo linha %d coluna %d:\t %d\n\n", (face=='v') ? "vertical" : "horizontal", semaforo_x, semaforo_y, fluxo(matriz, semaforo_x, semaforo_y,face));
@@ -202,8 +202,18 @@ void imprimirMatriz(char matriz[TAMANHO_CIDADE_LINHA][TAMANHO_CIDADE_COLUNA], Se
         for (int j = 0; j < TAMANHO_CIDADE_COLUNA; j++)
         {
             char celula = matriz[i][j]; // Obtém o valor da célula atual
-            if (celula == 'C')
-                printf("🚗 "); // Representa um carro
+            if (celula == 'C'){
+                for(int indice = 0;indice < QTD_CARROS;indice++)
+                {
+                    if(carros[indice].x == i && carros[indice].y == j)
+                        if (carros[indice].velocidade == 1)
+                            printf("🚌");
+                        else if (carros[indice].velocidade == 2)
+                            printf("🚗");
+                        else
+                            printf("🚑");y
+                }       
+            }
             else if (celula == 'v')
                 printf(" ● "); // Representa um vértice
             else if (celula == 'A')
