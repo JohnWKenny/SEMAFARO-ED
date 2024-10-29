@@ -220,11 +220,18 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
     {
     case '^': // Mover para cima
         aux = carro->velocidade;
-        for(int i = 1; i <= aux; i++){
-            if((matriz[carro->x - i][carro->y] != '^' && matriz[carro->x - i][carro->y] != '|')){
-                aux = 1;
+        for(int i = aux; i >= 1; i--){
+            if((matriz[carro->x - i][carro->y] != '^' && matriz[carro->x - i][carro->y] != '|' && matriz[carro->x - i][carro->y]!='C')){
+                aux-=1;
+                continue;
             }
-        }
+            else if(matriz[carro->x - i][carro->y] == 'C'){
+                int aux2= i - 1;
+                i = 1;
+                aux = aux2;
+                continue;
+            }
+        }                                                                                                                                                                                       
         if(aux == 0) aux = 1;
 
         if (carro->x - aux>= 0)
@@ -242,7 +249,7 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
                     }
                 }
  
-                if (!semaforo.estado_verde && semaforo.contador >= aux)
+                if (!semaforo.estado_verde)
                 {
                     carro->parado = false;
                     carro->x -= aux;
@@ -268,9 +275,16 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
  
     case 'V': // Mover para baixo
         aux = carro->velocidade;
-            for(int i = 1; i <= aux; i++){
-            if((matriz[carro->x + i][carro->y] != '|' && matriz[carro->x + i][carro->y] != 'V')){
+            for(int i = aux; i >= 1; i--){
+            if((matriz[carro->x + i][carro->y] != '|' && matriz[carro->x + i][carro->y] != 'V' && matriz[carro->x + i][carro->y] != 'C')){
                aux = 1;
+               break;
+            }
+            else if(matriz[carro->x + i][carro->y] == 'C'){
+                int aux2= i - 1;
+                i = 1;
+                aux = aux2;
+                continue;
             }
         }
         if(aux == 0) aux = 1;
@@ -289,7 +303,7 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
                     }
                 }
  
-                if (!semaforo.estado_verde && semaforo.contador >= aux)
+                if (!semaforo.estado_verde)
                 {
                     carro->parado = false;
                     carro->x += aux;
@@ -315,9 +329,16 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
  
     case '>': // Mover para direita
         aux = carro->velocidade;
-        for(int i = 1; i <= aux; i++){
-            if((matriz[carro->x][carro->y + i] != '>' && matriz[carro->x][carro->y + i] != '-')){
+        for(int i = aux; i >= 1; i--){
+            if((matriz[carro->x][carro->y + i] != '>' && matriz[carro->x][carro->y + i] != '-' && matriz[carro->x][carro->y + i] != 'C')){
                 aux = 1;
+                break;
+            }
+            else if(matriz[carro->x][carro->y + i] == 'C'){
+                int aux2= i - 1;
+                i = 1;
+                aux = aux2;
+                continue;
             }
         }
         if(aux == 0) aux = 1;
@@ -362,10 +383,16 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
  
     case '<': // Mover para esquerda
         aux = carro->velocidade;
-            for(int i = 1; i <= aux; i++){
-            if((matriz[carro->x][carro->y - i] != '<' && matriz[carro->x][carro->y - i] !='-')){
-                i = 1;
+            for(int i = aux; i >= 1; i--){
+            if((matriz[carro->x][carro->y - i] != '<' && matriz[carro->x][carro->y - i] !='-' && matriz[carro->x][carro->y - i] !='C')){
                 aux = 1;
+                break;
+            }
+            if(matriz[carro->x][carro->y - i] == 'C'){
+                int aux2= i - 1;
+                i = 1;
+                aux = aux2;
+                continue;
             }
         }
         if(aux == 0) aux = 1;
