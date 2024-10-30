@@ -127,6 +127,26 @@ void DefinirMovimentoNoSemaforo(Carro *carro, Carro *carros, Semaforo *semaforos
         if (tentantivas > 1)
         {
             carro->parado = true;
+
+            switch (carro->lastmove)
+            {
+            case 94:
+                carro->x += aux;
+                break;
+            case 86:
+                carro->x -= aux;
+                break;
+            case 62:
+                carro->y -= aux;
+                break;
+            case 60:
+                carro->y += aux;
+                break;
+            
+            default:
+                break;
+            }
+
             break;
         }
         switch (pop(&carro->movimentos))
@@ -157,11 +177,14 @@ void DefinirMovimentoNoSemaforo(Carro *carro, Carro *carros, Semaforo *semaforos
                 tentantivas += 1;
                 preencher(&carro->movimentos, carro);
             }
+
  
             if (!posicaoOcupada(carro->x + aux, carro->y, carros, carro->lastmove) && (matriz[carro->x + aux][carro->y] == 'V' ||
                                                                                                      matriz[carro->x + aux][carro->y] == '|'))
             {
                 carro->lastmove = 'V';
+                if (matriz[carro->x + aux][carro->y] == '|')
+                    carro->viaDupla = 86;
                 break;
             }
  
@@ -221,7 +244,7 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
     case '^': // Mover para cima
         aux = carro->velocidade;
         for(int i = aux; i >= 1; i--){
-            if((matriz[carro->x - i][carro->y] != '^' && matriz[carro->x - i][carro->y] != '|' && matriz[carro->x - i][carro->y]!='C')){
+            if(((matriz[carro->x - i][carro->y] != '^' && matriz[carro->x - i][carro->y] != '|' && matriz[carro->x - i][carro->y]!='C') || matriz[carro->x-i][carro->y]=='A')){
                 aux-=1;
                 continue;
             }
@@ -263,7 +286,7 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
                 carro->x -= aux;
                 DefinirMovimentoNoSemaforo(carro, carros, semaforos, matriz, aux); // Chama a função para lidar com o semáforo
             }
-            else if (!posicaoOcupada(carro->x - aux, carro->y, carros, carro->lastmove))
+            else if (!posicaoOcupada(carro->x - aux, carro->y, carros, carro->lastmove && matriz[carro->x - aux][carro->y] != 'A'))
                 carro->x -= aux;
             else
                 carro->parado = true;
@@ -276,7 +299,7 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
     case 'V': // Mover para baixo
         aux = carro->velocidade;
             for(int i = aux; i >= 1; i--){
-            if((matriz[carro->x + i][carro->y] != '|' && matriz[carro->x + i][carro->y] != 'V' && matriz[carro->x + i][carro->y] != 'C')){
+            if(((matriz[carro->x + i][carro->y] != '|' && matriz[carro->x + i][carro->y] != 'V' && matriz[carro->x + i][carro->y] != 'C') || matriz[carro->x-i][carro->y]=='A')){
                aux = 1;
                break;
             }
@@ -317,7 +340,7 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
                 carro->x += aux;
                 DefinirMovimentoNoSemaforo(carro, carros, semaforos, matriz, aux); // Chama a função para lidar com o semáforo
             }
-            else if (!posicaoOcupada(carro->x + aux, carro->y, carros, carro->lastmove))
+            else if (!posicaoOcupada(carro->x + aux, carro->y, carros, carro->lastmove && matriz[carro->x + aux][carro->y] != 'A'))
                 carro->x += aux;
             else
                 carro->parado = true;
@@ -330,7 +353,7 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
     case '>': // Mover para direita
         aux = carro->velocidade;
         for(int i = aux; i >= 1; i--){
-            if((matriz[carro->x][carro->y + i] != '>' && matriz[carro->x][carro->y + i] != '-' && matriz[carro->x][carro->y + i] != 'C')){
+            if(((matriz[carro->x][carro->y + i] != '>' && matriz[carro->x][carro->y + i] != '-' && matriz[carro->x][carro->y + i] != 'C') || matriz[carro->x-i][carro->y]=='A')){
                 aux = 1;
                 break;
             }
@@ -371,7 +394,7 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
                 carro->y += aux;
                 DefinirMovimentoNoSemaforo(carro, carros, semaforos, matriz, aux); // Chama a função para lidar com o semáforo
             }
-            else if (!posicaoOcupada(carro->x, carro->y + aux, carros, carro->lastmove))
+            else if (!posicaoOcupada(carro->x, carro->y + aux, carros, carro->lastmove && matriz[carro->x][carro->y + aux] != 'A'))
                 carro->y += aux;
             else
                 carro->parado = true;
@@ -384,7 +407,7 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
     case '<': // Mover para esquerda
         aux = carro->velocidade;
             for(int i = aux; i >= 1; i--){
-            if((matriz[carro->x][carro->y - i] != '<' && matriz[carro->x][carro->y - i] !='-' && matriz[carro->x][carro->y - i] !='C')){
+            if(((matriz[carro->x][carro->y - i] != '<' && matriz[carro->x][carro->y - i] !='-' && matriz[carro->x][carro->y - i] !='C') || matriz[carro->x-i][carro->y]=='A')){
                 aux = 1;
                 break;
             }
@@ -424,7 +447,7 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
                 carro->y -= aux;
                 DefinirMovimentoNoSemaforo(carro, carros, semaforos, matriz, aux); // Chama a função para lidar com o semáforo
             }
-            else if (!posicaoOcupada(carro->x, carro->y - aux, carros, carro->lastmove))
+            else if (!posicaoOcupada(carro->x, carro->y - aux, carros, carro->lastmove && matriz[carro->x][carro->y - aux] != 'A'))
                 carro->y -= aux;
             else
                 carro->parado = true;
