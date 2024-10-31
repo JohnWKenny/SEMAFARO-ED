@@ -299,7 +299,7 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
     case 'V': // Mover para baixo
         aux = carro->velocidade;
             for(int i = aux; i >= 1; i--){
-            if(((matriz[carro->x + i][carro->y] != '|' && matriz[carro->x + i][carro->y] != 'V' && matriz[carro->x + i][carro->y] != 'C') || matriz[carro->x-i][carro->y]=='A')){
+            if(((matriz[carro->x + i][carro->y] != '|' && matriz[carro->x + i][carro->y] != 'V' && matriz[carro->x + i][carro->y] != 'C') || matriz[carro->x+i][carro->y]=='A')){
                aux = 1;
                break;
             }
@@ -353,9 +353,9 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
     case '>': // Mover para direita
         aux = carro->velocidade;
         for(int i = aux; i >= 1; i--){
-            if(((matriz[carro->x][carro->y + i] != '>' && matriz[carro->x][carro->y + i] != '-' && matriz[carro->x][carro->y + i] != 'C') || matriz[carro->x-i][carro->y]=='A')){
-                aux = 1;
-                break;
+            if(((matriz[carro->x][carro->y + i] != '>' && matriz[carro->x][carro->y + i] != '-' && matriz[carro->x][carro->y + i] != 'C') || matriz[carro->x][carro->y+i]=='A')){
+                aux -= 1;
+                continue;;
             }
             else if(matriz[carro->x][carro->y + i] == 'C'){
                 int aux2= i - 1;
@@ -407,7 +407,7 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
     case '<': // Mover para esquerda
         aux = carro->velocidade;
             for(int i = aux; i >= 1; i--){
-            if(((matriz[carro->x][carro->y - i] != '<' && matriz[carro->x][carro->y - i] !='-' && matriz[carro->x][carro->y - i] !='C') || matriz[carro->x-i][carro->y]=='A')){
+            if(((matriz[carro->x][carro->y - i] != '<' && matriz[carro->x][carro->y - i] !='-' && matriz[carro->x][carro->y - i] !='C') || matriz[carro->x][carro->y - i]=='A')){
                 aux = 1;
                 break;
             }
