@@ -245,14 +245,22 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
         aux = carro->velocidade;
         for(int i = aux; i >= 1; i--){
             if(((matriz[carro->x - i][carro->y] != '^' && matriz[carro->x - i][carro->y] != '|' && matriz[carro->x - i][carro->y]!='C') || matriz[carro->x-i][carro->y]=='A')){
-                aux-=1;
-                continue;
+                aux=1;
+                break;
             }
             else if(matriz[carro->x - i][carro->y] == 'C'){
                 int aux2= i - 1;
                 i = 1;
                 aux = aux2;
                 continue;
+            }
+            else if(matriz[carro->x - i][carro->y] == 'R' || matriz[carro->x - i][carro->y] == 'G'){
+                if(i = 1){
+                aux = 1;
+                break;
+            } 
+            aux-=1;
+            continue;
             }
         }                                                                                                                                                                                       
         if(aux == 0) aux = 1;
@@ -309,6 +317,14 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
                 aux = aux2;
                 continue;
             }
+            else if(matriz[carro->x + i][carro->y] == 'R' || matriz[carro->x + 1][carro->y] == 'G'){
+            if(i = 1){
+                aux = 1;
+                break;
+            } 
+            aux-=1;
+            continue;
+            }
         }
         if(aux == 0) aux = 1;
 
@@ -354,14 +370,20 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
         aux = carro->velocidade;
         for(int i = aux; i >= 1; i--){
             if(((matriz[carro->x][carro->y + i] != '>' && matriz[carro->x][carro->y + i] != '-' && matriz[carro->x][carro->y + i] != 'C') || matriz[carro->x][carro->y+i]=='A')){
-                aux -= 1;
-                continue;;
+                aux = 1;
+                break;
             }
             else if(matriz[carro->x][carro->y + i] == 'C'){
-                int aux2= i - 1;
-                i = 1;
-                aux = aux2;
+                aux-=1;
                 continue;
+            }
+            if(matriz[carro->x][carro->y + i] == 'R' || matriz[carro->x][carro->y + i] == 'G'){
+            if(i = 1){
+                aux = 1;
+                break;
+            } 
+            aux-=1;
+            continue;
             }
         }
         if(aux == 0) aux = 1;
@@ -407,15 +429,21 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
     case '<': // Mover para esquerda
         aux = carro->velocidade;
             for(int i = aux; i >= 1; i--){
-            if(((matriz[carro->x][carro->y - i] != '<' && matriz[carro->x][carro->y - i] !='-' && matriz[carro->x][carro->y - i] !='C') || matriz[carro->x][carro->y - i]=='A')){
+            if(((matriz[carro->x][carro->y - i] != '<' && matriz[carro->x][carro->y - i] !='-' && matriz[carro->x][carro->y - i] != 'C') || matriz[carro->x][carro->y - i]=='A')){
+                aux = 1;
+                break;;
+            }
+            else if(matriz[carro->x][carro->y - i] == 'C'){
+                aux -=1;
+                continue;
+            }
+            else if(matriz[carro->x][carro->y - i] == 'R' || matriz[carro->x][carro->y - i] == 'G'){
+            if(i = 1){
                 aux = 1;
                 break;
-            }
-            if(matriz[carro->x][carro->y - i] == 'C'){
-                int aux2= i - 1;
-                i = 1;
-                aux = aux2;
-                continue;
+            } 
+            aux-=1;
+            continue;
             }
         }
         if(aux == 0) aux = 1;
