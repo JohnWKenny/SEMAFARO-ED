@@ -61,9 +61,9 @@ Em vias duplas, o carro pode se mover caso os últimos movimentos dos carros sej
 
 Exemplo:
 
-`> 🚗 🟢` 
-`    🚗 `
-`    |`  
+```> 🚗 🟢
+    🚗 
+    |  ```
 No exemplo acima, para o carro que está na via unica, quando ele vai para o semaforo é indica que a posição de baixo esta ocupada, por o carro esta parado, contudo, isso é uma via dupla, então o carro da via unica poderia passar, é por isso que existe o if de via dupla nessa função, se seus "ultimos_movimentos" forem diferentes então o carro pode entrar na via dupla.
 
 ### moverCarro
@@ -86,15 +86,15 @@ o segundo if serve para verificar se ele ta passando por um carro, e se esse car
 Exemplo de situação:
 1º
 
-`    | `
-`> 🚗 🟢  >`
-`    🚗`
-`     |`
+```    | 
+`> 🚗 🟢  >
+    🚗
+     |```
 2º
-`    | `
-`> > 🚗  > `
-`    🚗 `
-`    |`
+```    | 
+> > 🚗  > 
+    🚗 
+    |```
 O carro de baixo percebe o carro à frente em um semáforo e reduz sua velocidade, respeitando o limite do semáforo.
 
 Essas verificações garantem que a movimentação dos carros seja feita de maneira realista, respeitando as sinalizações e as condições de cada via.
