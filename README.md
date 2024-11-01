@@ -16,6 +16,8 @@ A cidade é representada por uma matriz (uma grade) onde cada célula é um pont
 - `C`: Indica a posição de um carro.
 - `G`: Semáforo verde.
 - `R`: Semáforo vermelho.
+- `A`: Acidente
+- `Q`: Semaforo com alerta
 
 ### Carros
 Cada carro tem uma posição na matriz (X, Y), e eles se movem pelas estradas conforme a direção da via. Se um carro encontrar um semáforo vermelho ou outro carro no caminho, ele tenta parar ou desviar.
@@ -32,7 +34,6 @@ A pilha é usada para armazenar as direções possíveis para o carro se mover (
 - **atualizarMatriz**: Atualiza a matriz com as novas posições dos carros e dos semáforos, limpando as posições antigas.
 - **imprimirMatriz**: Mostra a matriz na tela, onde os carros são representados pelo símbolo 🚗, os semáforos por 🟢 (verde) e 🔴 (vermelho).
 - **posicaoOcupada**: Verifica se uma posição específica da matriz já está ocupada por outro carro.
-- **desviar**: Se um carro encontrar um obstáculo (outro carro), essa função tenta encontrar uma direção alternativa para ele seguir.
 - **moverCarro**: Movimenta um carro na cidade, seguindo as regras das estradas e semáforos. Se o carro encontrar um semáforo vermelho ou outro carro, ele pode parar ou tentar desviar.
 - **atualizarSemaforos**: Controla o tempo de troca dos semáforos entre verde e vermelho.
 - **Pilha (Stack)**: Uma pilha é usada para armazenar os possíveis movimentos dos carros (`^` para cima, `V` para baixo, `>` para direita, `<` para esquerda). A pilha ajuda o carro a decidir para onde ir quando se move pelas estradas.
@@ -48,56 +49,52 @@ A pilha é usada para armazenar as direções possíveis para o carro se mover (
 2. Caso o item que foi desempilhado não seja igual ao sentido da estrada ele deve ser ignorado.
 3. Quando a pilha ficar vazia ela é preenchida com os movimentos, isso até achar qual o movimento certo a se fazer.
 
-## Problema da Lógica (recomendável olhar o código)
-Seguindo a lógica original, o carro ainda pode se mover incorretamente em algumas situações. Vamos considerar o seguinte exemplo para ilustrar o problema. Suponha os seguintes símbolos:
+## Funções Principais
+### posicaoOcupada
+A função posicaoOcupada verifica se a próxima posição do carro está ocupada, considerando as seguintes regras:
 
-- `🚗`: Carro
-- `🟢`: Semáforo verde
-- `>`: Sentido direita
-- `<`: Sentido esquerda
-- Desconsideraremos o sinal amarelo e vermelho.
+Checagem de Carro Parado: Se a próxima posição for ocupada por um carro que está parado, a função retorna que a posição está ocupada, impedindo que o carro atual continue.
 
-Agora, imagine a seguinte estrada:
-`🚗 > 🟢 > >`
+Tratamento para Vias Duplas:
 
-Suponha que a pilha de direções seja `['<', '>']`, com o topo sendo `>`, e uma função arbitrária que desempilha, empilha todos os movimentos caso a pilha esteja vazía e move o carro conforme as seguintes condições:
+Em vias duplas, o carro pode se mover caso os últimos movimentos dos carros sejam diferentes, ou seja, estão em direções opostas.
 
-- Se a posição à direita contiver `>` ou `🟢`, o carro se move para a direita.
-- Se a posição à esquerda contiver `<` ou `🟢`, o carro se move para a esquerda.
+Exemplo:
 
-A sequência de movimentos seria algo assim:
+`> 🚗 🟢` 
+`    🚗 `
+`    |`  
+No exemplo acima, para o carro que está na via unica, quando ele vai para o semaforo é indica que a posição de baixo esta ocupada, por o carro esta parado, contudo, isso é uma via dupla, então o carro da via unica poderia passar, é por isso que existe o if de via dupla nessa função, se seus "ultimos_movimentos" forem diferentes então o carro pode entrar na via dupla.
 
-`> 🚗 🟢 > >`
+### moverCarro
+Esta função trata do deslocamento do carro, considerando a velocidade e a presença de semáforos.
 
-Lembrando que a pilha ficaria `['>']`, então ele desimpilharia ele sem se mover e depois empilha todos os movimentos de volta, voltando ao original, o que implica que isso acontecerá diversas vezes.
+Tratamento da Velocidade
+Limite de Velocidade para Direções Diferentes:
 
-O carro se move para a direita, ficando assim:
+Em vias verticais, o semáforo está posicionado a cada 3 unidades de deslocamento, enquanto nas horizontais está a cada 4 unidades.
+Para manter o controle e evitar que o carro ultrapasse semáforos, a velocidade máxima é definida como:
+2 unidades para vias verticais
+3 unidades para vias horizontais
 
-`> > 🚗 > >`
+Restrição de Velocidade Próximo ao Semáforo:
 
-Ao continuar seguindo as regras, o carro novamente se move para a direita, aproximando-se do semáforo verde:
+O primeiro if na função verifica se o carro está próximo a um semáforo e, se estiver, a velocidade é reduzida para evitar que o carro passe o sinal.
 
-`> > 🟢 🚗 >`
+o segundo if serve para verificar se ele ta passando por um carro, e se esse carro estiver num semaforo ele tem que parar antes daquela localização, olha o exemplo:
 
-Neste ponto, se a função detectar que a próxima posição à esquerda (`<`) tem um semáforo verde, o carro tentaria retornar para essa posição, resultando no seguinte:
+Exemplo de situação:
+1º
 
-`> > 🚗 > >`
+`    | `
+`> 🚗 🟢  >`
+`    🚗`
+`     |`
+2º
+`    | `
+`> > 🚗  > `
+`    🚗 `
+`    |`
+O carro de baixo percebe o carro à frente em um semáforo e reduz sua velocidade, respeitando o limite do semáforo.
 
-Isso criaria um loop infinito, já que o carro continuaria a se mover entre as mesmas posições, sem alcançar um destino final.
-
-### Solução Implementada
-
-Para resolver esse problema, foi implementada uma verificação adicional. Agora, a função não apenas verifica a próxima posição à frente, mas também a posição adjacente (a "traseira" do carro). Com essa verificação dupla, o carro evita entrar em loops, pois a lógica impede que ele volte para uma posição já ocupada ou desfavorável. Assim, o movimento fica mais preciso e evita comportamentos erráticos.
-
-Caso dúvidas pode-se fazer um teste, na função mover carro retire de todas as condições que verificam a posição adjacente, por exemplo, se o carro está indo para direita sua posição normal seria y + 1, sua posição adjacente seria y - 1.
-
-### O Que Falta/Problema
-
-- [ ] Isolamento da área desativada (Os carros ainda circulam por lá)
-
-### ÚLTIMAS MODIFICAÇÕES
-
-- [x] Definição de constante necessárias apenas no arquivo "Structs.h;
-- [x] Arquivo "stackbib.h" removido, por redundância. (Seu conteúdo já está no arquivo "Structs.h");
-- [x] Biblioteca "cJSON" adicionada para auxiliar na geração do arquivo de log;
-- [x] Função de log do fluxo da cidade completo.
+Essas verificações garantem que a movimentação dos carros seja feita de maneira realista, respeitando as sinalizações e as condições de cada via.
