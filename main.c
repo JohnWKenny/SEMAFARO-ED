@@ -161,7 +161,7 @@ int main()
     printf("Quanto tempo de simulacao deseja? ");
     scanf("%d", &tempo_simulacao);
 
-    simularCarros(carros, semaforos); // Inicia a simulação
+    simularCarros(carros, semaforos, tempo_simulacao); // Inicia a simulação
 
     return 0; // Termina a execução do programa com sucesso
 
