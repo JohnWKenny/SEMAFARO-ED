@@ -276,7 +276,7 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
         if (carro->x - deslocamento >= 0)
         {
             // Se for um semaforo
-            if ((carro->x - deslocamento) % 3 == 0 && (carro->y) % 4 == 0)
+            if ((carro->x - deslocamento) % 3 == 0 && (carro->y) % 4 == 0 && matriz[carro->x - deslocamento][carro->y] != 'v')
             {
                 Semaforo semaforo;
                 for (int indice = 0; indice < QTD_SEMAFOROS; indice++)
@@ -303,7 +303,7 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
                 carro->x -= deslocamento;
                 DefinirMovimentoNoSemaforo(carro, carros, semaforos, matriz, deslocamento); // Chama a função para lidar com o semáforo
             }
-            else if (!posicaoOcupada(carro->x - deslocamento, carro->y, carros, carro->ultimo_movimento && matriz[carro->x - deslocamento][carro->y] != 'A'))
+            else if (!posicaoOcupada(carro->x - deslocamento, carro->y, carros, carro->ultimo_movimento) && matriz[carro->x - deslocamento][carro->y] != 'A')
                 carro->x -= deslocamento;
             else
                 carro->parado = true;
@@ -340,7 +340,7 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
 
         if (carro->x + deslocamento < TAMANHO_CIDADE_LINHA)
         {
-            if ((carro->x + deslocamento) % 3 == 0 && (carro->y) % 4 == 0)
+            if ((carro->x + deslocamento) % 3 == 0 && (carro->y) % 4 == 0 && matriz[carro->x + deslocamento][carro->y] != 'v')
             {
                 Semaforo semaforo;
                 for (int indice = 0; indice < QTD_SEMAFOROS; indice++)
@@ -366,7 +366,7 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
                 carro->x += deslocamento;
                 DefinirMovimentoNoSemaforo(carro, carros, semaforos, matriz, deslocamento); // Chama a função para lidar com o semáforo
             }
-            else if (!posicaoOcupada(carro->x + deslocamento, carro->y, carros, carro->ultimo_movimento && matriz[carro->x + deslocamento][carro->y] != 'A'))
+            else if (!posicaoOcupada(carro->x + deslocamento, carro->y, carros, carro->ultimo_movimento) && matriz[carro->x + deslocamento][carro->y] != 'A')
                 carro->x += deslocamento;
             else
                 carro->parado = true;
@@ -401,7 +401,7 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
 
         if (carro->y + deslocamento < TAMANHO_CIDADE_COLUNA)
         {
-            if ((carro->x) % 3 == 0 && (carro->y + deslocamento) % 4 == 0)
+            if ((carro->x) % 3 == 0 && (carro->y + deslocamento) % 4 == 0 && matriz[carro->x][carro->y + deslocamento] != 'v')
             {
                 Semaforo semaforo;
                 for (int indice = 0; indice < QTD_SEMAFOROS; indice++)
@@ -427,7 +427,7 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
                 carro->y += deslocamento;
                 DefinirMovimentoNoSemaforo(carro, carros, semaforos, matriz, deslocamento); // Chama a função para lidar com o semáforo
             }
-            else if (!posicaoOcupada(carro->x, carro->y + deslocamento, carros, carro->ultimo_movimento && matriz[carro->x][carro->y + deslocamento] != 'A'))
+            else if (!posicaoOcupada(carro->x, carro->y + deslocamento, carros, carro->ultimo_movimento) && matriz[carro->x][carro->y + deslocamento] != 'A')
                 carro->y += deslocamento;
             else
                 carro->parado = true;
@@ -461,7 +461,7 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
             deslocamento = 1;
         if (carro->y - deslocamento >= 0)
         {
-            if ((carro->x) % 3 == 0 && (carro->y - deslocamento) % 4 == 0)
+            if ((carro->x) % 3 == 0 && (carro->y - deslocamento) % 4 == 0 && matriz[carro->x][carro->y - deslocamento] != 'v')
             {
                 Semaforo semaforo;
                 for (int indice = 0; indice < QTD_SEMAFOROS; indice++)
@@ -487,7 +487,7 @@ void MoverCarro(Carro *carro, Carro *carros, Semaforo *semaforos, char matriz[TA
                 carro->y -= deslocamento;
                 DefinirMovimentoNoSemaforo(carro, carros, semaforos, matriz, deslocamento); // Chama a função para lidar com o semáforo
             }
-            else if (!posicaoOcupada(carro->x, carro->y - deslocamento, carros, carro->ultimo_movimento && matriz[carro->x][carro->y - deslocamento] != 'A'))
+            else if (!posicaoOcupada(carro->x, carro->y - deslocamento, carros, carro->ultimo_movimento) && matriz[carro->x][carro->y - deslocamento] != 'A')
                 carro->y -= deslocamento;
             else
                 carro->parado = true;
